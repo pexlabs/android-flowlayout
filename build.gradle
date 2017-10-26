@@ -6,7 +6,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:1.1.1'
+    classpath 'com.android.tools.build:gradle:3.0.0'
   }
 }
 
@@ -17,8 +17,8 @@ allprojects {
 }
 
 def isReleaseBuild() {
-    println version
-    return version.contains("SNAPSHOT") == false
+  println version
+  return version.contains("SNAPSHOT") == false
 }
 
 task wrapper(type: Wrapper) {

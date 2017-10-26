@@ -9,10 +9,30 @@
         <attr name="maxLines" format="integer"/>
         <attr name="weightDefault" format="float" />
         <attr name="android:gravity"/>
+        <attr name="chip_backgroundColor" format="color" />
+        <attr name="showChipDetailed" format="boolean" />
+        <attr name="chip_detailed_textColor" format="color" />
+        <attr name="chip_detailed_backgroundColor" format="color" />
+        <attr name="chip_detailed_deleteIconColor" format="color" />
     </declare-styleable>
     <declare-styleable name="FlowLayout_LayoutParams">
         <attr name="layout_newLine" format="boolean"/>
         <attr name="layout_weight" format="float"/>
         <attr name="android:layout_gravity"/>
+    </declare-styleable>
+
+    <declare-styleable name="ChipView">
+        <attr name="label" format="string" />
+        <attr name="labelColor" format="color" />
+        <attr name="labelAvatarPadding" format="dimension" />
+        <attr name="labelTextSize" format="dimension" />
+        <attr name="hasAvatarIcon" format="boolean" />
+        <attr name="avatarIcon" format="reference" />
+        <attr name="deletable" format="boolean" />
+        <attr name="deleteIcon" format="reference" />
+        <attr name="deleteIconColor" format="color" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="borderColor" format="color" />
+        <attr name="borderSize" format="dimension" />
     </declare-styleable>
 </resources>
