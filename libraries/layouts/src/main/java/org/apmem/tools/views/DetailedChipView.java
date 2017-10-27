@@ -1,3 +1,9 @@
+/**
+ * DetailedChipView.java
+ *
+ * This file has been pulled from MaterialChipsLayout library
+ */
+
 package org.apmem.tools.views;
 
 import android.content.Context;
@@ -11,6 +17,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -32,11 +39,11 @@ public class DetailedChipView extends RelativeLayout {
     private CircleImageView mAvatarIconImageView;
     private TextView mNameTextView;
     private TextView mInfoTextView;
-    private ImageButton mDeleteButton;
+    private ImageView mDeleteButton;
     // letter tile provider
     private static LetterTileProvider mLetterTileProvider;
     // attributes
-    private ColorStateList mBackgroundColor;
+    private int mBackgroundColor;
 
     public DetailedChipView(Context context) {
         super(context);
@@ -63,7 +70,7 @@ public class DetailedChipView extends RelativeLayout {
         mAvatarIconImageView = (CircleImageView) rootView.findViewById(R.id.avatar_icon);
         mNameTextView = (TextView) rootView.findViewById(R.id.name);
         mInfoTextView = (TextView) rootView.findViewById(R.id.info);
-        mDeleteButton = (ImageButton) rootView.findViewById(R.id.delete_button);
+        mDeleteButton = (ImageView) rootView.findViewById(R.id.delete_button);
 
         // letter tile provider
         mLetterTileProvider = new LetterTileProvider(mContext);
@@ -134,22 +141,22 @@ public class DetailedChipView extends RelativeLayout {
         }
     }
 
-    public void setTextColor(ColorStateList color) {
+    public void setTextColor(int color) {
         mNameTextView.setTextColor(color);
-        mInfoTextView.setTextColor(ColorUtil.alpha(color.getDefaultColor(), 150));
+        mInfoTextView.setTextColor(ColorUtil.alpha(color, 150));
     }
 
-    public void setBackGroundcolor(ColorStateList color) {
+    public void setBackGroundcolor(int color) {
         mBackgroundColor = color;
-        mContentLayout.getBackground().setColorFilter(color.getDefaultColor(), PorterDuff.Mode.SRC_ATOP);
+        mContentLayout.getBackground().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
     }
 
     public int getBackgroundColor() {
-        return mBackgroundColor == null ? getResources().getColor(R.color.colorAccent) : mBackgroundColor.getDefaultColor();
+        return mBackgroundColor;
     }
 
-    public void setDeleteIconColor(ColorStateList color) {
-        mDeleteButton.getDrawable().mutate().setColorFilter(color.getDefaultColor(), PorterDuff.Mode.SRC_ATOP);
+    public void setDeleteIconColor(int color) {
+        mDeleteButton.getDrawable().mutate().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
     }
 
     public void setOnDeleteClicked(OnClickListener onClickListener) {
@@ -174,9 +181,9 @@ public class DetailedChipView extends RelativeLayout {
         private Drawable avatarDrawable;
         private String name;
         private String info;
-        private ColorStateList textColor;
-        private ColorStateList backgroundColor;
-        private ColorStateList deleteIconColor;
+        private int textColor;
+        private int backgroundColor;
+        private int deleteIconColor;
 
         public Builder(Context context) {
             this.context = context;
@@ -210,17 +217,17 @@ public class DetailedChipView extends RelativeLayout {
             return this;
         }
 
-        public Builder textColor(ColorStateList textColor) {
+        public Builder textColor(int textColor) {
             this.textColor = textColor;
             return this;
         }
 
-        public Builder backgroundColor(ColorStateList backgroundColor) {
+        public Builder backgroundColor(int backgroundColor) {
             this.backgroundColor = backgroundColor;
             return this;
         }
 
-        public Builder deleteIconColor(ColorStateList deleteIconColor) {
+        public Builder deleteIconColor(int deleteIconColor) {
             this.deleteIconColor = deleteIconColor;
             return this;
         }
@@ -240,25 +247,11 @@ public class DetailedChipView extends RelativeLayout {
         else
             detailedChipView.setAvatarIcon(mLetterTileProvider.getLetterTile(builder.name));
 
-        // background color
-        if (builder.backgroundColor != null)
-            detailedChipView.setBackGroundcolor(builder.backgroundColor);
+        detailedChipView.setBackGroundcolor(builder.backgroundColor);
 
-        // text color
-        if (builder.textColor != null)
-            detailedChipView.setTextColor(builder.textColor);
-        else if (ColorUtil.isColorDark(detailedChipView.getBackgroundColor()))
-            detailedChipView.setTextColor(ColorStateList.valueOf(Color.WHITE));
-        else
-            detailedChipView.setTextColor(ColorStateList.valueOf(Color.BLACK));
+        detailedChipView.setTextColor(builder.textColor);
 
-        // delete icon color
-        if (builder.deleteIconColor != null)
-            detailedChipView.setDeleteIconColor(builder.deleteIconColor);
-        else if (ColorUtil.isColorDark(detailedChipView.getBackgroundColor()))
-            detailedChipView.setDeleteIconColor(ColorStateList.valueOf(Color.WHITE));
-        else
-            detailedChipView.setDeleteIconColor(ColorStateList.valueOf(Color.BLACK));
+        detailedChipView.setDeleteIconColor(builder.deleteIconColor);
 
         detailedChipView.setName(builder.name);
         detailedChipView.setInfo(builder.info);

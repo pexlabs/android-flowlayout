@@ -9,6 +9,8 @@
         <attr name="maxLines" format="integer"/>
         <attr name="weightDefault" format="float" />
         <attr name="android:gravity"/>
+        <attr name="count_view_size" format="integer" />
+        <attr name="count_view_text_color" format="color" />
         <attr name="chip_backgroundColor" format="color" />
         <attr name="showChipDetailed" format="boolean" />
         <attr name="chip_detailed_textColor" format="color" />

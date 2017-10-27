@@ -1,3 +1,9 @@
+/**
+ * ViewUtil.java
+ *
+ * This file has been pulled from MaterialChipsLayout library
+ */
+
 package org.apmem.tools.util;
 
 import android.content.Context;
@@ -6,7 +12,10 @@ import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
+
+import org.apmem.tools.layouts.FlowLayout;
 
 public class ViewUtil {
 
@@ -77,5 +86,20 @@ public class ViewUtil {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK)
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    public static int getViewPositionInParent(FlowLayout parent, View view) {
+        int position;
+        boolean found = false;
+        for (position = 0; position < parent.getChildCount(); position++) {
+            if (parent.getChildAt(position) == view) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            return -1;
+        }
+        return position;
     }
 }

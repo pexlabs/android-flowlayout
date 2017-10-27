@@ -1,3 +1,9 @@
+/**
+ * LetterTitleProvider.java
+ *
+ * This file has been pulled from MaterialChipsLayout library
+ */
+
 package org.apmem.tools.util;
 
 import android.content.Context;

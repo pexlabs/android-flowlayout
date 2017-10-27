@@ -11,7 +11,6 @@
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="32dp"
-        android:clickable="true"
         android:background="@drawable/bg_chip_view">
 
         <!-- avatar -->

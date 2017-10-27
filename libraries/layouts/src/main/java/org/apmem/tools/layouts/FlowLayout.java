@@ -1,3 +1,7 @@
+/**
+ * Extension of existing Flow layout for Astro specific functions
+ */
+
 package org.apmem.tools.layouts;
 
 import android.content.Context;
@@ -10,6 +14,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Patterns;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -25,6 +30,7 @@ import org.apmem.tools.layouts.logic.CommonLogic;
 import org.apmem.tools.layouts.logic.ConfigDefinition;
 import org.apmem.tools.layouts.logic.LineDefinition;
 import org.apmem.tools.layouts.logic.ViewDefinition;
+import org.apmem.tools.listeners.AstroDragListener;
 import org.apmem.tools.model.ChipInterface;
 
 import java.lang.reflect.Method;
@@ -33,13 +39,24 @@ import java.util.List;
 
 public abstract class FlowLayout extends ViewGroup {
 
+    private static final String LOG_TAG = FlowLayout.class.getSimpleName();
+
     private final ConfigDefinition mConfig;
     private List<LineDefinition> mLines = new ArrayList<>();
     private List<ViewDefinition> mViews = new ArrayList<>();
-    private MultiAutoCompleteTextView mAutoCompleteTextView;
-    private ChipListener mChipListener;
 
+    // Our beloved AutoCompleteTextView
+    protected MultiAutoCompleteTextView mAutoCompleteTextView;
+    // ListAdapter for AutoCompleteTextView
     protected ArrayAdapter mListAdapter;
+    // color related attributes
+    protected int mChipDetailedTextColor;
+    protected int mChipDetailedDeleteIconColor;
+    protected int mChipDetailedBackgroundColor;
+    protected int mChipBackgroundColor;
+    protected int mCountViewTextColor;
+    protected boolean mShowChipDetailed = true;
+    protected float mCountViewTextSize;
 
     public FlowLayout(Context context) {
         super(context);
@@ -76,83 +93,184 @@ public abstract class FlowLayout extends ViewGroup {
             }
             //noinspection ResourceType
             this.setLayoutDirection(layoutDirection);
+
+            mChipDetailedTextColor = a.getColor(R.styleable.FlowLayout_chip_detailed_textColor,
+                    getResources().getColor(R.color.white));
+            mChipDetailedBackgroundColor = a.getColor(R.styleable.
+                            FlowLayout_chip_detailed_backgroundColor,
+                    getResources().getColor(R.color.astroViolet700));
+            mChipDetailedDeleteIconColor = a.getColor(R.styleable.
+                            FlowLayout_chip_detailed_deleteIconColor,
+                    getResources().getColor(android.R.color.transparent));
+            mChipBackgroundColor = a.getColor(R.styleable.FlowLayout_chip_backgroundColor,
+                    getResources().getColor(R.color.astroBlack100));
+            mCountViewTextColor = a.getColor(R.styleable.FlowLayout_count_view_text_color,
+                    getResources().getColor(R.color.astroBlack200));
+            // show chip detailed
+            mShowChipDetailed = a.getBoolean(R.styleable.FlowLayout_showChipDetailed, true);
+            mCountViewTextSize = a.getDimension(R.styleable.FlowLayout_count_view_size, 16);
+
         } finally {
             a.recycle();
         }
 
+        // first initialize the AutoCompleteView
         initAutoCompleteView();
-        super.addView(mAutoCompleteTextView);
-    }
-
-    public interface ChipListener {
-        void onChipRemoved(ChipInterface chip, int position);
-    }
-
-    public void setChipListener(ChipListener listener) {
-        mChipListener = listener;
+        addView(mAutoCompleteTextView);
+        setGravity(Gravity.CENTER_VERTICAL);
     }
 
     public void addAutoCompleteView() {
-        super.addView(mAutoCompleteTextView);
+        addView(mAutoCompleteTextView);
     }
 
     public void removeAutoCompleteView() {
-        super.addView(mAutoCompleteTextView);
+        removeView(mAutoCompleteTextView);
     }
 
+    /**
+     * Sets adapter to AutoCompleteTextView
+     * @param adapter
+     */
     public void setAdapter(ArrayAdapter adapter) {
         mListAdapter = adapter;
         mAutoCompleteTextView.setAdapter(mListAdapter);
     }
 
+    /**
+     * Sets background of {@link org.apmem.tools.views.ChipView}
+     * @param backgroundColor
+     */
+    public void setChipBackgroundColor(int backgroundColor) {
+        mChipBackgroundColor = backgroundColor;
+    }
+
+    /**
+     * Flag to show chip detail or now, true by default
+     * @return
+     */
+    public boolean isShowChipDetailed() {
+        return mShowChipDetailed;
+    }
+
+    /**
+     * Sets background color of text of detailed view
+     * @param chipDetailedTextColor
+     */
+    public void setChipDetailedTextColor(int chipDetailedTextColor) {
+        mChipDetailedTextColor = chipDetailedTextColor;
+    }
+
+    /**
+     * Sets delete icon of detailed view
+     * @param chipDetailedDeleteIconColor
+     */
+    public void setChipDetailedDeleteIconColor(int chipDetailedDeleteIconColor) {
+        mChipDetailedDeleteIconColor = chipDetailedDeleteIconColor;
+    }
+
+    /**
+     * sets background color of detailed view
+     * @param chipDetailedBackgroundColor
+     */
+    public void setChipDetailedBackgroundColor(int chipDetailedBackgroundColor) {
+        mChipDetailedBackgroundColor = chipDetailedBackgroundColor;
+    }
+
+    /**
+     * Sets size of Count text view (used for +n feature)
+     * @param countViewTextSize
+     */
+    public void setCountViewTextSize(float countViewTextSize) {
+        mCountViewTextSize = countViewTextSize;
+    }
+
+    /**
+     * Sets text color of count text view
+     * @param countViewTextColor
+     */
+    public void setCountViewTextColor(int countViewTextColor) {
+        mCountViewTextColor = countViewTextColor;
+    }
+
+    /**
+     * Sets the hint of AutoCompleteView
+     * @param hintLabel
+     */
+    public void setHint(String hintLabel) {
+        mAutoCompleteTextView.setHint(hintLabel);
+    }
+
+    /**
+     * DropDownAnchor layout id
+     * @param id
+     */
     public void setDropDownAnchor(int id) {
         mAutoCompleteTextView.setDropDownAnchor(id);
     }
 
     private void initAutoCompleteView() {
+        // Create a new Instance
         mAutoCompleteTextView = new MultiAutoCompleteTextView(getContext());
-        mAutoCompleteTextView.setHint("Email Address");
+
+        mAutoCompleteTextView.setGravity(Gravity.CENTER_VERTICAL);
+        // set the hint
+        mAutoCompleteTextView.setHint(getResources().getString(R.string.astro_autocomplete_hint));
         mAutoCompleteTextView.setBackgroundResource(android.R.color.transparent);
+
+        // IME options & Input related initialization
         // prevent fullscreen on landscape
         mAutoCompleteTextView.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         mAutoCompleteTextView.setPrivateImeOptions("nm");
         // no suggestion
         mAutoCompleteTextView.setInputType(InputType.TYPE_TEXT_VARIATION_FILTER | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        mAutoCompleteTextView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+        // When clicked on DropDown list add that value as a chip
         mAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mAutoCompleteTextView.setText("");
-                addView(getObjectView(mListAdapter.getItem(position)), getChildCount()-1);
+                View chipView = getObjectView(mListAdapter.getItem(position));
+                int chipPosition = getChildCount() - 1;
+                addChipAt(chipView, chipPosition);
             }
         });
-        mAutoCompleteTextView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+        // When user clicks on DONE, add the value as chip if any
         mAutoCompleteTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(actionId == EditorInfo.IME_ACTION_DONE) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
                     String text = v.getText().toString();
-                    if(TextUtils.isEmpty(text)) {
+                    if (TextUtils.isEmpty(text)) {
                         return true;
                     }
                     mAutoCompleteTextView.setText("");
-                    addView(getObjectView(text), getChildCount()-1);
+                    View chipView = getObjectView(text);
+                    int chipPosition = getChildCount() - 1;
+                    addChipAt(chipView, chipPosition);
                     return true;
                 }
                 return false;
             }
         });
+
+        // if user pressed delete button, remove the chip
         mAutoCompleteTextView.setOnKeyListener(new OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(event.getAction() == KeyEvent.ACTION_DOWN
+                if (event.getAction() == KeyEvent.ACTION_DOWN
                         && event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
                     // remove last chip
-                    if(getChildCount() > 1 && mAutoCompleteTextView.getText().toString().length() == 0)
-                        removeChip(getChildCount() - 2);
+                    if (getChildCount() > 1 && mAutoCompleteTextView.getText().toString().length() == 0)
+                        removeChipAt(getChildCount() - 2);
                 }
                 return false;
             }
         });
+
+        // Add text wachter, if at all user pressed <Space> add the text before that as a chip
         mAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -161,12 +279,17 @@ public abstract class FlowLayout extends ViewGroup {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(TextUtils.isEmpty(s) || s.length() < 2) {
+                if (TextUtils.isEmpty(s) || s.length() < 2) {
                     return;
                 }
-                if(s.charAt(s.length()-1) == ' ' && s.charAt(s.length()-2) != ' ') {
-                    mAutoCompleteTextView.setText("");
-                    addView(getObjectView(s.toString()), getChildCount()-1);
+                if (s.charAt(s.length() - 1) == ' ' && s.charAt(s.length() - 2) != ' ') {
+                    // add only if it is valid email address
+                    if(Patterns.EMAIL_ADDRESS.matcher(s.toString().trim()).matches()) {
+                        mAutoCompleteTextView.setText("");
+                        View chipView = getObjectView(s.toString().trim());
+                        int chipPosition = getChildCount() - 1;
+                        addChipAt(chipView, chipPosition);
+                    }
                 }
             }
 
@@ -179,28 +302,33 @@ public abstract class FlowLayout extends ViewGroup {
         mAutoCompleteTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus) {
-                    if(mLines.size() > 1) {
+                if (!hasFocus) {
+                    // If no focus then collapse
+                    if (mLines.size() > 1) {
                         collapse();
                     }
                 } else {
+                    // If AutoCompleteView gets the focus then expand
                     expand();
                 }
             }
         });
-    }
 
-    public void removeChip(int position) {
-        removeViewAt(position);
-        if(mChipListener != null) {
-            mChipListener.onChipRemoved(null, position);
-        }
-        invalidate();
+        // AutoCompleteView should also listen for Dragging events
+        mAutoCompleteTextView.setOnDragListener(new AstroDragListener());
     }
 
     public abstract void collapse();
+
     public abstract void expand();
+
     public abstract View getObjectView(Object item);
+
+    public abstract void removeChipAt(int position);
+
+    public abstract void addChipAt(View view, int position);
+
+    public abstract List<ChipInterface> getObjects();
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {

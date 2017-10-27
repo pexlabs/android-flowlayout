@@ -1,10 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Astro specific color palette -->
+    <color name="red500">#FF4060</color>
+    <color name="red700">#DE3461</color>
+    <color name="red">@color/red500</color>
 
-    <color name="colorChipViewBackground">#E0E0E0</color>
-    <color name="chips_opened_bg">#009688</color>
-    <color name="colorCloseChip">#ababab</color>
-    <color name="white_transparency">#b9ffffff</color>
-    <color name="colorAccent">?attr/colorAccent</color>
+    <color name="astroViolet300">#AC80C0</color>
+    <color name="astroViolet500">#894BA6</color>
+    <color name="astroViolet700">#723090</color>
+    <color name="astroViolet900">#5D1A7C</color>
+    <color name="astroViolet500A">#A349CC</color>
+    <color name="astroViolet">@color/astroViolet500</color>
+
+    <color name="astroBlack100">#E9EAEC</color>
+    <color name="astroBlack200">#D3D6D9</color>
+    <color name="astroBlack500">#8F979E</color>
+    <color name="astroBlack600">#79828B</color>
+    <color name="astroBlack700">#626C77</color>
+    <color name="astroBlack">#1F2E3D</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="white_alpha_50">#80FFFFFF</color>
+    <color name="white_alpha_70">#B2FFFFFF</color>
+    <color name="white_alpha_90">#E5FFFFFF</color>
+
+    <color name="gold500">#FFBE26</color>
+    <color name="pink300">#EE76A8</color>
+    <color name="gold500A">#FFC800</color>
+    <color name="green700">#29CDA4</color>
+    <color name="blue900">#3677B9</color>
+    <color name="teal700">#14BCCC</color>
+
+    <array name="letter_tile_colors">
+        <item>@color/red500</item>
+        <item>@color/pink300</item>
+        <item>@color/gold500</item>
+        <item>@color/gold500A</item>
+        <item>@color/green700</item>
+        <item>@color/astroBlack500</item>
+        <item>@color/teal700</item>
+        <item>@color/blue900</item>
+        <item>@color/astroViolet500A</item>
+    </array>
 
 </resources>

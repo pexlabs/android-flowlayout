@@ -1,82 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.apmem.tools.layouts.FlowLayout
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:f="http://schemas.android.com/apk/res-auto"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@android:color/black">
+
+    <org.apmem.tools.layouts.AstroFlowLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:f="http://schemas.android.com/apk/res-auto"
         android:orientation="horizontal"
-        f:debugDraw="true"
-        f:weightDefault="1.0"
         f:layoutDirection="ltr"
-        android:gravity="fill"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:paddingLeft="6dip"
-        android:paddingTop="6dip"
-        android:paddingRight="12dip"
-        android:paddingBottom="12dip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:background="@android:color/black"
-        android:id="@+id/flowLayout">
+        android:id="@+id/flowLayout1"/>
+
+    <org.apmem.tools.layouts.AstroFlowLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:f="http://schemas.android.com/apk/res-auto"
+        android:orientation="horizontal"
+        f:layoutDirection="ltr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_below="@id/flowLayout1"
+        android:background="@android:color/black"
+        android:id="@+id/flowLayout2"/>
+
+    <TextView
+        android:layout_centerInParent="true"
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <Button
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:text="@string/button_test"/>
+        android:layout_alignParentBottom="true"
+        android:id="@+id/validate1"
+        android:text="Validate first"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
     <Button
-            android:layout_gravity="bottom|fill_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_test"/>
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_test"/>
-    <Button
-            android:layout_marginRight="32dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_horizontalMargin"/>
-    <Button
-            android:layout_marginBottom="32dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_verticalMargin"/>
-    <Button
-            android:layout_marginLeft="32dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_horizontalMargin"/>
-    <Button
-            android:layout_marginTop="32dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_verticalMargin"/>
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_longTest"/>
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_test"/>
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_test"/>
-    <Button
-            f:layout_weight="0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_test"/>
-    <Button
-            f:layout_newLine="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_newLine"/>
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_test"/>
-    <TextView
-            f:layout_weight="1000.0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-</org.apmem.tools.layouts.FlowLayout>
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:id="@+id/validate2"
+        android:text="Validate seocnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>

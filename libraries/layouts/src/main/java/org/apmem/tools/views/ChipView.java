@@ -1,3 +1,9 @@
+/**
+ * ChipView.java
+ *
+ * This file has been pulled from MaterialChipsLayout library
+ */
+
 package org.apmem.tools.views;
 
 
@@ -76,6 +82,9 @@ public class ChipView extends RelativeLayout {
      * @param attrs the attributes
      */
     private void init(AttributeSet attrs) {
+        setClickable(true);
+        setFocusable(true);
+        setFocusableInTouchMode(true);
         // inflate layout
         View rootView = inflate(getContext(), R.layout.chip_view, this);
 
