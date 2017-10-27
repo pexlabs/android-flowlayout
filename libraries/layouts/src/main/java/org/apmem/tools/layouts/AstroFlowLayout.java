@@ -411,6 +411,7 @@ public class AstroFlowLayout extends FlowLayout {
 
     /**
      * Called by {@link AstroDragListener} to read Cache value
+     * However updation is done only in {@link #addChipAt(View, int)} & {@link #removeChipAt(int)}
      * @return
      */
     public Map<View, ChipInterface> getChipMap() {
@@ -439,10 +440,20 @@ public class AstroFlowLayout extends FlowLayout {
         return mHiddenViews != null && mHiddenViews.size() > 0;
     }
 
-    protected ArrayList<ChipInterface> convertParcelableArrayToObjectArray(ArrayList<Parcelable> s) {
-        return (ArrayList<ChipInterface>) (ArrayList) s;
+    /**
+     * Converts Parcelable to ChipInterface
+     * @param list
+     * @return
+     */
+    protected ArrayList<ChipInterface> convertParcelableArrayToObjectArray(ArrayList<Parcelable>
+            list) {
+        return (ArrayList<ChipInterface>) (ArrayList) list;
     }
 
+    /**
+     * Returns parcelables converted from our ChipInterface
+     * @return
+     */
     protected ArrayList<Parcelable> getParcelableObjects() {
         ArrayList<Parcelable> parcelables = new ArrayList<>();
         for (Object obj : getObjects()) {
