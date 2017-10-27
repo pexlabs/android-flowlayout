@@ -28,8 +28,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public final class AutoCompleteAdapter<T extends ChipInterface> extends BaseAdapter
         implements Filterable {
 
+    // Holds the lists ie data for showing suggestions
     private List<T> mListItems;
+    // AstroSpecific filter, could be optimized
     private AstroFilter mAstroFilter;
+    // Suggestions to show
     private List<T> mSuggestions;
     private LetterTileProvider mLetterTileProvider;
 
@@ -103,6 +106,9 @@ public final class AutoCompleteAdapter<T extends ChipInterface> extends BaseAdap
         protected FilterResults performFiltering(CharSequence constraint) {
             mSuggestions.clear();
 
+            // nothing special, just match constraint with either label or info
+            // if it matches then return suggestions
+            // Can be optimized later
             if (!TextUtils.isEmpty(constraint)) {
                 for (int i=0 ; i<mListItems.size(); i++) {
                     ChipInterface chipInterface = mListItems.get(i);

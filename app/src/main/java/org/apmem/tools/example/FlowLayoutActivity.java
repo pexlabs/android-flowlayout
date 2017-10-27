@@ -61,7 +61,6 @@ public class FlowLayoutActivity extends Activity {
 
         // Don't forget to do this. Chip listener, observes chips behaviour
         // Add listener to both AstroFlowLayouts
-
         mFlowLayout1.setChipListener(new ChipListener() {
             @Override
             public void onChipRemoved(ChipInterface chip) {

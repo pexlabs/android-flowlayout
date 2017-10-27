@@ -266,6 +266,7 @@ public class AstroFlowLayout extends FlowLayout {
         if (item instanceof ChipInterface) {
             chipInterface = (ChipInterface) item;
         }
+        // Create a chip view
         final ChipView chipView = new ChipView(getContext());
         chipView.setLabel(chipInterface.getLabel(), 0, (int) getResources()
                 .getDimension(R.dimen.chip_view_label_text_size));
@@ -326,7 +327,7 @@ public class AstroFlowLayout extends FlowLayout {
                 expand();
                 return;
             }
-            
+
             // Show detailed view as a dialog
             final DetailedChipView detailedChipView = getDetailedChipView(mChipMap.get(v));
             new ChipsDetailsDialog(v, detailedChipView).show();
@@ -426,7 +427,7 @@ public class AstroFlowLayout extends FlowLayout {
         Set<View> keys = mChipMap.keySet();
         List<ChipInterface> chips = new ArrayList<>();
         for (View key : keys) {
-            if(mChipMap.get(key) == null) continue;
+            if (mChipMap.get(key) == null) continue;
             chips.add(mChipMap.get(key));
         }
         return chips;
@@ -523,7 +524,7 @@ public class AstroFlowLayout extends FlowLayout {
         }
 
         // If layout is collapsed then try to request the focus
-        if(!isCollapsed()) {
+        if (!isCollapsed()) {
             mAutoCompleteTextView.setVisibility(VISIBLE);
             mAutoCompleteTextView.requestFocus();
         }
