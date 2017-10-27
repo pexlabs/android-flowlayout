@@ -19,13 +19,13 @@ public class AstroDragListener implements View.OnDragListener {
 
     private static final String LOG_TAG = "###AstroDragListener";
 
-    private Drawable mEnterShape;
+    private Drawable mDragEnterShapeDrawable;
 
     public AstroDragListener() {
     }
 
-    public void setEnterShapeDrawable(Drawable enterShapeDrawable) {
-        mEnterShape = enterShapeDrawable;
+    public void setDragEnterShapeDrawable(Drawable enterShapeDrawable) {
+        mDragEnterShapeDrawable = enterShapeDrawable;
     }
 
     @Override
@@ -36,17 +36,17 @@ public class AstroDragListener implements View.OnDragListener {
 
             case DragEvent.ACTION_DRAG_ENTERED:
                 // Set enter drawable if it is not null
-                if (mEnterShape != null) {
-                    targetView.setBackgroundDrawable(mEnterShape);
+                if (mDragEnterShapeDrawable != null) {
+                    targetView.setBackgroundDrawable(mDragEnterShapeDrawable);
                 }
 
                 AstroFlowLayout targetContainer = (AstroFlowLayout) targetView.getParent();
                 // Check if the container in which we are dropping a view is collapsed or not
                 // if it is collapsed, then expand it
                 if (targetContainer.isCollapsed()) {
-                    Log.d(LOG_TAG, "is container collapsed " + targetContainer.isCollapsed());
                     targetContainer.forceExpand();
                 }
+
                 break;
 
             case DragEvent.ACTION_DRAG_EXITED:
@@ -69,10 +69,16 @@ public class AstroDragListener implements View.OnDragListener {
 
                 // now get the position of source view in source container
                 int sourcePosition = ViewUtil.getViewPositionInParent(sourceContainer, sourceView);
+                if (sourcePosition == -1) {
+                    return true;
+                }
 
                 // get position of target view in target container
                 // this is nothing but our target DROP position
                 int targetPosition = ViewUtil.getViewPositionInParent(targetContainer, targetView);
+                if (targetPosition == -1) {
+                    return true;
+                }
 
                 if (targetView instanceof MultiAutoCompleteTextView) {
                     // now is target view is MultiAutoCompleteTextView, that means user tried to drop
@@ -97,8 +103,7 @@ public class AstroDragListener implements View.OnDragListener {
                 ChipInterface chipInterface = sourceContainer.getChipMap().get(sourceView);
 
                 sourceView.setVisibility(View.VISIBLE);
-                sourceContainer.getChipMap().remove(sourceView);
-                sourceContainer.removeChipAt(sourcePosition);
+                sourceContainer.removeChildView(sourceView);
 
                 // add view to target container
                 targetContainer.addChipAtPositionWithChip(sourceView, chipInterface, targetPosition);

@@ -15,7 +15,11 @@ import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -44,9 +48,6 @@ public class AstroFlowLayout extends FlowLayout {
 
     // TAG for logging
     private static final String LOG_TAG = AstroFlowLayout.class.getSimpleName();
-
-    // Holds data of all the added views, help in expand/collapse function
-    private Set<View> mAllViews = new HashSet<>();
 
     // When this FlowLayout is collapsed we hold data in this set
     private Set<View> mHiddenViews = new HashSet<>();
@@ -88,7 +89,7 @@ public class AstroFlowLayout extends FlowLayout {
             mHiddenViews.add(getChildAt(i));
         }
 
-        // Get the views of first line
+        // Get the views present at first line / row
         LineDefinition lineDefinition = getLines().get(0);
         for (ViewDefinition viewDefinition : lineDefinition.getViews()) {
             // now add this views to our temp list
@@ -158,9 +159,10 @@ public class AstroFlowLayout extends FlowLayout {
      */
     private View getCountView(String text) {
         TextView countView = new TextView(getContext());
-        countView.setPadding(5, 5, 5, 5);
+        int padding = (int) getResources().getDimension(R.dimen.count_view_padding);
+        countView.setPadding(padding, padding, padding, padding);
         countView.setText(text);
-        countView.setTextColor(Color.WHITE);
+        countView.setTextColor(mCountViewTextColor);
         countView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,6 +170,9 @@ public class AstroFlowLayout extends FlowLayout {
             }
         });
         countView.setTextSize(mCountViewTextSize);
+        // there is a possibility that user drags some view on this count view,
+        // this case is handled by setting drag listener
+        countView.setOnDragListener(new AstroDragListener());
         return countView;
     }
 
@@ -180,11 +185,20 @@ public class AstroFlowLayout extends FlowLayout {
         // Find the view at that position
         View view = getChildAt(position);
 
+        removeChildView(view);
+    }
+
+    /**
+     * Called by {@link #removeChipAt(int)} & {@link AstroDragListener} to remove the view
+     * also updates cache
+     * @param view
+     */
+    public void removeChildView(View view) {
         // Get the information of the view from cached map
         ChipInterface removedChip = mChipMap.get(view);
 
         // Remove the view at that particular position
-        removeViewAt(position);
+        removeView(view);
 
         // Call onChipRemoved for removed chip
         if (mChipListener != null) {
@@ -192,7 +206,7 @@ public class AstroFlowLayout extends FlowLayout {
         }
 
         // remove the chip from cache
-        mChipMap.remove(getChildAt(position));
+        mChipMap.remove(view);
 
         // invalidate the view
         invalidate();
@@ -228,6 +242,9 @@ public class AstroFlowLayout extends FlowLayout {
      */
     public void addChipAtPositionWithChip(View view, ChipInterface chipInterface, int position) {
         super.addView(view, position);
+        // attach click listener again. Because this method is called from {@link AstroDragListener}
+        // meaning, the view was removed & called again. So we need to attach click listener again
+        view.setOnClickListener(new ChipClickListener());
         mChipMap.put(view, chipInterface);
         if (mChipListener != null) {
             mChipListener.onChipAdded(chipInterface);
@@ -249,14 +266,28 @@ public class AstroFlowLayout extends FlowLayout {
         if (item instanceof ChipInterface) {
             chipInterface = (ChipInterface) item;
         }
-        ChipView chipView = new ChipView(getContext());
-        chipView.setLabel(chipInterface.getLabel(), 0, ViewUtil.dpToPx(16));
-        chipView.setPadding(2, 2, 2, 2);
+        final ChipView chipView = new ChipView(getContext());
+        chipView.setLabel(chipInterface.getLabel(), 0, (int) getResources()
+                .getDimension(R.dimen.chip_view_label_text_size));
+        int padding = (int) getResources().getDimension(R.dimen.chip_view_text_padding);
+        chipView.setPadding(padding, padding, padding, padding);
         chipView.setHasAvatarIcon(true);
-        chipView.setChipBorderColor(4, Color.BLUE);
+        chipView.setChipBorderColor((int) getResources().getDimension(R.dimen.chip_view_border_size),
+                mChipBorderColor);
         chipView.setOnClickListener(new ChipClickListener());
         chipView.setOnDragListener(mAstroDragListener);
         chipView.setLongClickable(true);
+        chipView.setOnDeleteClicked(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FlowLayout flowLayout = (FlowLayout) chipView.getParent();
+                int position = ViewUtil.getViewPositionInParent(flowLayout, chipView);
+                if (position == -1) {
+                    return;
+                }
+                removeChipAt(position);
+            }
+        });
         // set long click listener for drag & drop functionality
         chipView.setOnLongClickListener(new OnLongClickListener() {
             @Override
@@ -295,14 +326,10 @@ public class AstroFlowLayout extends FlowLayout {
                 expand();
                 return;
             }
-
-            if (mChipMap.get(v) == null) {
-                return;
-            }
-
+            
             // Show detailed view as a dialog
             final DetailedChipView detailedChipView = getDetailedChipView(mChipMap.get(v));
-            new ChipsDetailsDialog(v, detailedChipView, mChipMap.get(v)).show();
+            new ChipsDetailsDialog(v, detailedChipView).show();
         }
     }
 
@@ -326,9 +353,6 @@ public class AstroFlowLayout extends FlowLayout {
      */
     private class ChipsDetailsDialog extends Dialog {
 
-        // link or span on which user clicked
-        // data about the clicked span / link
-        private ChipInterface mChip;
         // the views of detailed chip layout
         private View mClickedView;
         private DetailedChipView mDetailedView;
@@ -336,13 +360,9 @@ public class AstroFlowLayout extends FlowLayout {
         /**
          * Constructor for ChipsDetailsDialog which is also known as ChipDetailsView
          * This dialog is aligned w.r.t. clicked token considering x & y coordinates
-         *
-         * @param chip : the details of the token
          */
-        public ChipsDetailsDialog(View clickedView, DetailedChipView detailedView,
-                                  ChipInterface chip) {
+        public ChipsDetailsDialog(View clickedView, DetailedChipView detailedView) {
             super(clickedView.getContext());
-            mChip = chip;
             mClickedView = clickedView;
             mDetailedView = detailedView;
         }
@@ -354,8 +374,9 @@ public class AstroFlowLayout extends FlowLayout {
             // Don't want the title on this dialog
             requestWindowFeature(Window.FEATURE_NO_TITLE);
             if (mDetailedView.getLayoutParams() == null) {
-                mDetailedView.setLayoutParams(new RelativeLayout.LayoutParams(ViewUtil.dpToPx(300),
-                        ViewUtil.dpToPx(100)));
+                mDetailedView.setLayoutParams(new RelativeLayout.LayoutParams(
+                        (int) getResources().getDimension(R.dimen.detail_view_width),
+                        (int) getResources().getDimension(R.dimen.detail_view_height)));
             }
             mDetailedView.setVisibility(VISIBLE);
             setContentView(mDetailedView);
@@ -364,18 +385,11 @@ public class AstroFlowLayout extends FlowLayout {
             mDetailedView.setOnDeleteClicked(new View.OnClickListener() {
                 public void onClick(View v) {
                     FlowLayout flowLayout = (FlowLayout) mClickedView.getParent();
-                    int i = 0;
-                    boolean found = false;
-                    for (i = 0; i < flowLayout.getChildCount() - 1; i++) {
-                        if (flowLayout.getChildAt(i) == mClickedView) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
+                    int position = ViewUtil.getViewPositionInParent(flowLayout, mClickedView);
+                    if (position == -1) {
                         return;
                     }
-                    removeChipAt(i);
+                    removeChipAt(position);
                     dismiss();
                 }
             });
@@ -384,7 +398,8 @@ public class AstroFlowLayout extends FlowLayout {
             WindowManager.LayoutParams wmlp = getWindow().getAttributes();
             wmlp.gravity = Gravity.TOP | Gravity.START;
             wmlp.x = (int) mClickedView.getX();
-            wmlp.y = (int) mClickedView.getY() + ViewUtil.dpToPx(50);
+            FlowLayout flowLayout = (FlowLayout) mClickedView.getParent();
+            wmlp.y = (int) ((int) mClickedView.getY() + flowLayout.getY());
 
             // Don't let the dialog look like we are stealing all focus from the user.
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
@@ -396,7 +411,6 @@ public class AstroFlowLayout extends FlowLayout {
 
     /**
      * Called by {@link AstroDragListener} to read Cache value
-     * However updation is done only in {@link #addChipAt(View, int)} & {@link #removeChipAt(int)}
      * @return
      */
     public Map<View, ChipInterface> getChipMap() {
@@ -411,6 +425,7 @@ public class AstroFlowLayout extends FlowLayout {
         Set<View> keys = mChipMap.keySet();
         List<ChipInterface> chips = new ArrayList<>();
         for (View key : keys) {
+            if(mChipMap.get(key) == null) continue;
             chips.add(mChipMap.get(key));
         }
         return chips;
@@ -422,5 +437,84 @@ public class AstroFlowLayout extends FlowLayout {
      */
     public boolean isCollapsed() {
         return mHiddenViews != null && mHiddenViews.size() > 0;
+    }
+
+    protected ArrayList<ChipInterface> convertParcelableArrayToObjectArray(ArrayList<Parcelable> s) {
+        return (ArrayList<ChipInterface>) (ArrayList) s;
+    }
+
+    protected ArrayList<Parcelable> getParcelableObjects() {
+        ArrayList<Parcelable> parcelables = new ArrayList<>();
+        for (Object obj : getObjects()) {
+            if (obj instanceof Parcelable) {
+                parcelables.add((Parcelable) obj);
+            } else {
+                Log.e(LOG_TAG, "Unable to save '" + obj + "'");
+            }
+        }
+        return parcelables;
+    }
+
+    /**
+     * Handle saving the objects state
+     */
+    private static class SavedState extends BaseSavedState {
+        ArrayList<Parcelable> baseObjects;
+
+        SavedState(Parcel in) {
+            super(in);
+            baseObjects = in.readArrayList(null);
+        }
+
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        @Override
+        public void writeToParcel(@NonNull Parcel out, int flags) {
+            out.writeList(baseObjects);
+        }
+
+        @SuppressWarnings("hiding")
+        public static final Parcelable.Creator<SavedState> CREATOR
+                = new Parcelable.Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
+    }
+
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+        ArrayList<Parcelable> baseObjects = getParcelableObjects();
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState state = new SavedState(superState);
+        state.baseObjects = baseObjects;
+        return state;
+    }
+
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        if (!(state instanceof SavedState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+        SavedState ss = (SavedState) state;
+        super.onRestoreInstanceState(ss.getSuperState());
+        List<ChipInterface> list = convertParcelableArrayToObjectArray(ss.baseObjects);
+        for (int i=0; i<list.size(); i++) {
+            addChipAt(getObjectView(list.get(i)), i);
+        }
+
+        // If layout is collapsed then try to request the focus
+        if(!isCollapsed()) {
+            mAutoCompleteTextView.setVisibility(VISIBLE);
+            mAutoCompleteTextView.requestFocus();
+        }
     }
 }

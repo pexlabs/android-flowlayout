@@ -14,7 +14,6 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.Patterns;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -23,6 +22,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Filterable;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
@@ -32,6 +33,8 @@ import org.apmem.tools.layouts.logic.LineDefinition;
 import org.apmem.tools.layouts.logic.ViewDefinition;
 import org.apmem.tools.listeners.AstroDragListener;
 import org.apmem.tools.model.ChipInterface;
+import org.apmem.tools.util.Utils;
+import org.apmem.tools.util.ViewUtil;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -47,8 +50,6 @@ public abstract class FlowLayout extends ViewGroup {
 
     // Our beloved AutoCompleteTextView
     protected MultiAutoCompleteTextView mAutoCompleteTextView;
-    // ListAdapter for AutoCompleteTextView
-    protected ArrayAdapter mListAdapter;
     // color related attributes
     protected int mChipDetailedTextColor;
     protected int mChipDetailedDeleteIconColor;
@@ -57,6 +58,7 @@ public abstract class FlowLayout extends ViewGroup {
     protected int mCountViewTextColor;
     protected boolean mShowChipDetailed = true;
     protected float mCountViewTextSize;
+    protected int mChipBorderColor;
 
     public FlowLayout(Context context) {
         super(context);
@@ -79,21 +81,26 @@ public abstract class FlowLayout extends ViewGroup {
     private void readStyleParameters(Context context, AttributeSet attributeSet) {
         TypedArray a = context.obtainStyledAttributes(attributeSet, R.styleable.FlowLayout);
         try {
-            this.mConfig.setOrientation(a.getInteger(R.styleable.FlowLayout_android_orientation, CommonLogic.HORIZONTAL));
+            this.mConfig.setOrientation(a.getInteger(R.styleable.FlowLayout_android_orientation,
+                    CommonLogic.HORIZONTAL));
             this.mConfig.setMaxLines(a.getInteger(R.styleable.FlowLayout_maxLines, 0));
             this.mConfig.setDebugDraw(a.getBoolean(R.styleable.FlowLayout_debugDraw, false));
             this.mConfig.setWeightDefault(a.getFloat(R.styleable.FlowLayout_weightDefault, 0.0f));
-            this.mConfig.setGravity(a.getInteger(R.styleable.FlowLayout_android_gravity, Gravity.NO_GRAVITY));
+            this.mConfig.setGravity(a.getInteger(R.styleable.FlowLayout_android_gravity,
+                    Gravity.NO_GRAVITY));
 
             int layoutDirection;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                layoutDirection = a.getInteger(R.styleable.FlowLayout_layoutDirection, LAYOUT_DIRECTION_LTR);
+                layoutDirection = a.getInteger(R.styleable.FlowLayout_layoutDirection,
+                        LAYOUT_DIRECTION_LTR);
             } else {
-                layoutDirection = a.getInteger(R.styleable.FlowLayout_layoutDirection, super.getLayoutDirection());
+                layoutDirection = a.getInteger(R.styleable.FlowLayout_layoutDirection,
+                        super.getLayoutDirection());
             }
             //noinspection ResourceType
             this.setLayoutDirection(layoutDirection);
 
+            // color initialization for chip view & detail view
             mChipDetailedTextColor = a.getColor(R.styleable.FlowLayout_chip_detailed_textColor,
                     getResources().getColor(R.color.white));
             mChipDetailedBackgroundColor = a.getColor(R.styleable.
@@ -106,9 +113,13 @@ public abstract class FlowLayout extends ViewGroup {
                     getResources().getColor(R.color.astroBlack100));
             mCountViewTextColor = a.getColor(R.styleable.FlowLayout_count_view_text_color,
                     getResources().getColor(R.color.astroBlack200));
+            mChipBorderColor = a.getColor(R.styleable.FlowLayout_count_view_border_color,
+                    getResources().getColor(R.color.blue900));
+
             // show chip detailed
             mShowChipDetailed = a.getBoolean(R.styleable.FlowLayout_showChipDetailed, true);
-            mCountViewTextSize = a.getDimension(R.styleable.FlowLayout_count_view_size, 16);
+            mCountViewTextSize = a.getDimension(R.styleable.FlowLayout_count_view_size,
+                    getResources().getDimension(R.dimen.count_view_label_text_size));
 
         } finally {
             a.recycle();
@@ -124,17 +135,14 @@ public abstract class FlowLayout extends ViewGroup {
         addView(mAutoCompleteTextView);
     }
 
-    public void removeAutoCompleteView() {
-        removeView(mAutoCompleteTextView);
-    }
-
     /**
      * Sets adapter to AutoCompleteTextView
      * @param adapter
      */
-    public void setAdapter(ArrayAdapter adapter) {
-        mListAdapter = adapter;
-        mAutoCompleteTextView.setAdapter(mListAdapter);
+    public <T extends BaseAdapter & Filterable> void setAutoCompleteViewAdapter(T adapter) {
+        //mListAdapter = adapter;
+        mAutoCompleteTextView.setAdapter(adapter);
+        mAutoCompleteTextView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
     }
 
     /**
@@ -194,6 +202,14 @@ public abstract class FlowLayout extends ViewGroup {
     }
 
     /**
+     * Sets border color of chip view
+     * @param borderColor
+     */
+    public void setChipBorderColor(int borderColor) {
+        mChipBorderColor = borderColor;
+    }
+
+    /**
      * Sets the hint of AutoCompleteView
      * @param hintLabel
      */
@@ -231,11 +247,14 @@ public abstract class FlowLayout extends ViewGroup {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mAutoCompleteTextView.setText("");
-                View chipView = getObjectView(mListAdapter.getItem(position));
+                View chipView = getObjectView(mAutoCompleteTextView.getAdapter().getItem(position));
                 int chipPosition = getChildCount() - 1;
                 addChipAt(chipView, chipPosition);
             }
         });
+
+        // make suggestions view full width
+        mAutoCompleteTextView.setDropDownWidth(ViewUtil.getDeviceWidth());
 
         // When user clicks on DONE, add the value as chip if any
         mAutoCompleteTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -244,6 +263,9 @@ public abstract class FlowLayout extends ViewGroup {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     String text = v.getText().toString();
                     if (TextUtils.isEmpty(text)) {
+                        return true;
+                    }
+                    if(!Utils.isValidEmailAddress(text)) {
                         return true;
                     }
                     mAutoCompleteTextView.setText("");
@@ -284,7 +306,7 @@ public abstract class FlowLayout extends ViewGroup {
                 }
                 if (s.charAt(s.length() - 1) == ' ' && s.charAt(s.length() - 2) != ' ') {
                     // add only if it is valid email address
-                    if(Patterns.EMAIL_ADDRESS.matcher(s.toString().trim()).matches()) {
+                    if (Utils.isValidEmailAddress(s.toString().trim())) {
                         mAutoCompleteTextView.setText("");
                         View chipView = getObjectView(s.toString().trim());
                         int chipPosition = getChildCount() - 1;
@@ -303,6 +325,18 @@ public abstract class FlowLayout extends ViewGroup {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
+                    // lost the focus. check if there is a text
+                    String text = mAutoCompleteTextView.getText().toString().trim();
+                    if(!TextUtils.isEmpty(text)) {
+                        if(Utils.isValidEmailAddress(text)) {
+                            View chipView = getObjectView(text);
+                            int chipPosition = getChildCount() - 1;
+                            addChipAt(chipView, chipPosition);
+                        }
+                        // hmm.. not sure if we have to do this, if focus is lost & entered text
+                        // is invalid clear the AutoCompleteTextView
+                        mAutoCompleteTextView.setText("");
+                    }
                     // If no focus then collapse
                     if (mLines.size() > 1) {
                         collapse();

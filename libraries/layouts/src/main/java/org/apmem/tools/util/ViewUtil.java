@@ -14,8 +14,7 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-
-import org.apmem.tools.layouts.FlowLayout;
+import android.view.ViewGroup;
 
 public class ViewUtil {
 
@@ -88,11 +87,22 @@ public class ViewUtil {
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
-    public static int getViewPositionInParent(FlowLayout parent, View view) {
+    public static int getDeviceWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
+
+    /**
+     * finds the position child in the parent
+     * if not found returns -1
+     * @param parent
+     * @param child
+     * @return
+     */
+    public static int getViewPositionInParent(ViewGroup parent, View child) {
         int position;
         boolean found = false;
         for (position = 0; position < parent.getChildCount(); position++) {
-            if (parent.getChildAt(position) == view) {
+            if (parent.getChildAt(position) == child) {
                 found = true;
                 break;
             }
