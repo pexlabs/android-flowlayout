@@ -10,6 +10,11 @@ import java.util.List;
  */
 
 public class Utils {
+
+    /**
+     * returns the Dummy data for demo purpose
+     * @return
+     */
     public static List<Chip> getDummyData() {
         List<Chip> data = new ArrayList<>();
         data.add(new Chip("Kaustubh", "kaustubh@astro-inc.com"));

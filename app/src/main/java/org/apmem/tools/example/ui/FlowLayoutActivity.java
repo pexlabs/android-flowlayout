@@ -14,7 +14,6 @@ import org.apmem.tools.listeners.ChipListener;
 import org.apmem.tools.model.Chip;
 import org.apmem.tools.model.ChipInterface;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.apmem.tools.example.helpers.Utils.getDummyData;

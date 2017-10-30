@@ -19,8 +19,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.FlowVi
 
     private static final int INPUT_COUNT = 3;
 
+    // Chips listener
     private ChipListener mChipListener;
 
+    // We need just 3 rows.
     private AstroFlowLayout mToView;
     private AstroFlowLayout mCcView;
     private AstroFlowLayout mBccView;

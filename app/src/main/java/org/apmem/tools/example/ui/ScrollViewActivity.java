@@ -13,6 +13,9 @@ import org.apmem.tools.model.ChipInterface;
 
 import static org.apmem.tools.example.helpers.Utils.getDummyData;
 
+/**
+ * Demo Activity to show working of {@link AstroFlowLayout} with ScrollView
+ */
 public class ScrollViewActivity extends Activity {
 
     private static final String LOG_TAG = "##ScrollViewActivity";
@@ -22,10 +25,12 @@ public class ScrollViewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scroll_view);
 
+        // Create instance of AutoCompleteAdapter
         final AutoCompleteAdapter<Chip> autoCompleteAdapter = new AutoCompleteAdapter<>(
                 getApplicationContext());
         autoCompleteAdapter.setData(getDummyData());
 
+        // Bind to/cc/bcc views one by one
         final AstroFlowLayout toView = (AstroFlowLayout) findViewById(R.id.to_view);
         toView.setAutoCompleteViewAdapter(autoCompleteAdapter);
         toView.setHint("to");
@@ -38,6 +43,7 @@ public class ScrollViewActivity extends Activity {
         bccView.setAutoCompleteViewAdapter(autoCompleteAdapter);
         bccView.setHint("bcc");
 
+        // Create chip listener & share them with all the to/cc/bcc views
         ChipListener chipListener = new ChipListener() {
             @Override
             public void onChipRemoved(ChipInterface chip) {
@@ -50,11 +56,18 @@ public class ScrollViewActivity extends Activity {
             }
         };
 
+        // Set the same chip listener to all the views
         toView.setChipListener(chipListener);
         ccView.setChipListener(chipListener);
         bccView.setChipListener(chipListener);
     }
 
+    /**
+     * helper method to print the data of the AstroFlowLayout ChipViews
+     * @param to
+     * @param cc
+     * @param bcc
+     */
     private void printToData(AstroFlowLayout to, AstroFlowLayout cc, AstroFlowLayout bcc) {
         Log.d(LOG_TAG, "####### TO DATA : ");
         for(ChipInterface chipInterface : to.getObjects()) {
