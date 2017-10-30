@@ -21,7 +21,6 @@ import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Filterable;
 import android.widget.MultiAutoCompleteTextView;
@@ -43,6 +42,8 @@ import java.util.List;
 public abstract class FlowLayout extends ViewGroup {
 
     private static final String LOG_TAG = FlowLayout.class.getSimpleName();
+    private static final int DEFAULT_PADDING = 8;
+
 
     private final ConfigDefinition mConfig;
     private List<LineDefinition> mLines = new ArrayList<>();
@@ -50,6 +51,10 @@ public abstract class FlowLayout extends ViewGroup {
 
     // Our beloved AutoCompleteTextView
     protected MultiAutoCompleteTextView mAutoCompleteTextView;
+
+    // hint of AutoCompleteTextView
+    protected String mHintText;
+
     // color related attributes
     protected int mChipDetailedTextColor;
     protected int mChipDetailedDeleteIconColor;
@@ -137,6 +142,7 @@ public abstract class FlowLayout extends ViewGroup {
 
     /**
      * Sets adapter to AutoCompleteTextView
+     *
      * @param adapter
      */
     public <T extends BaseAdapter & Filterable> void setAutoCompleteViewAdapter(T adapter) {
@@ -147,6 +153,7 @@ public abstract class FlowLayout extends ViewGroup {
 
     /**
      * Sets background of {@link org.apmem.tools.views.ChipView}
+     *
      * @param backgroundColor
      */
     public void setChipBackgroundColor(int backgroundColor) {
@@ -155,6 +162,7 @@ public abstract class FlowLayout extends ViewGroup {
 
     /**
      * Flag to show chip detail or now, true by default
+     *
      * @return
      */
     public boolean isShowChipDetailed() {
@@ -163,6 +171,7 @@ public abstract class FlowLayout extends ViewGroup {
 
     /**
      * Sets background color of text of detailed view
+     *
      * @param chipDetailedTextColor
      */
     public void setChipDetailedTextColor(int chipDetailedTextColor) {
@@ -171,6 +180,7 @@ public abstract class FlowLayout extends ViewGroup {
 
     /**
      * Sets delete icon of detailed view
+     *
      * @param chipDetailedDeleteIconColor
      */
     public void setChipDetailedDeleteIconColor(int chipDetailedDeleteIconColor) {
@@ -179,6 +189,7 @@ public abstract class FlowLayout extends ViewGroup {
 
     /**
      * sets background color of detailed view
+     *
      * @param chipDetailedBackgroundColor
      */
     public void setChipDetailedBackgroundColor(int chipDetailedBackgroundColor) {
@@ -187,6 +198,7 @@ public abstract class FlowLayout extends ViewGroup {
 
     /**
      * Sets size of Count text view (used for +n feature)
+     *
      * @param countViewTextSize
      */
     public void setCountViewTextSize(float countViewTextSize) {
@@ -195,6 +207,7 @@ public abstract class FlowLayout extends ViewGroup {
 
     /**
      * Sets text color of count text view
+     *
      * @param countViewTextColor
      */
     public void setCountViewTextColor(int countViewTextColor) {
@@ -203,6 +216,7 @@ public abstract class FlowLayout extends ViewGroup {
 
     /**
      * Sets border color of chip view
+     *
      * @param borderColor
      */
     public void setChipBorderColor(int borderColor) {
@@ -211,14 +225,17 @@ public abstract class FlowLayout extends ViewGroup {
 
     /**
      * Sets the hint of AutoCompleteView
+     *
      * @param hintLabel
      */
     public void setHint(String hintLabel) {
-        mAutoCompleteTextView.setHint(hintLabel);
+        mHintText = hintLabel;
+        mAutoCompleteTextView.setHint(mHintText);
     }
 
     /**
      * DropDownAnchor layout id
+     *
      * @param id
      */
     public void setDropDownAnchor(int id) {
@@ -229,9 +246,13 @@ public abstract class FlowLayout extends ViewGroup {
         // Create a new Instance
         mAutoCompleteTextView = new MultiAutoCompleteTextView(getContext());
 
+        int padding = ViewUtil.dpToPx(DEFAULT_PADDING);
+        mAutoCompleteTextView.setPadding(padding, padding, padding, padding);
+
         mAutoCompleteTextView.setGravity(Gravity.CENTER_VERTICAL);
         // set the hint
-        mAutoCompleteTextView.setHint(getResources().getString(R.string.astro_autocomplete_hint));
+        mHintText = getResources().getString(R.string.astro_autocomplete_hint);
+        mAutoCompleteTextView.setHint(mHintText);
         mAutoCompleteTextView.setBackgroundResource(android.R.color.transparent);
 
         // IME options & Input related initialization
@@ -265,7 +286,7 @@ public abstract class FlowLayout extends ViewGroup {
                     if (TextUtils.isEmpty(text)) {
                         return true;
                     }
-                    if(!Utils.isValidEmailAddress(text)) {
+                    if (!Utils.isValidEmailAddress(text)) {
                         return true;
                     }
                     mAutoCompleteTextView.setText("");
@@ -325,10 +346,12 @@ public abstract class FlowLayout extends ViewGroup {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
+                    // if focus is lost then hide the cursor forcefully
+                    mAutoCompleteTextView.setCursorVisible(false);
                     // lost the focus. check if there is a text
                     String text = mAutoCompleteTextView.getText().toString().trim();
-                    if(!TextUtils.isEmpty(text)) {
-                        if(Utils.isValidEmailAddress(text)) {
+                    if (!TextUtils.isEmpty(text)) {
+                        if (Utils.isValidEmailAddress(text)) {
                             View chipView = getObjectView(text);
                             int chipPosition = getChildCount() - 1;
                             addChipAt(chipView, chipPosition);
@@ -342,6 +365,8 @@ public abstract class FlowLayout extends ViewGroup {
                         collapse();
                     }
                 } else {
+                    // if focus is gained then show the cursor forcefully
+                    mAutoCompleteTextView.setCursorVisible(true);
                     // If AutoCompleteView gets the focus then expand
                     expand();
                 }

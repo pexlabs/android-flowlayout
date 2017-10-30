@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">RecyclerSample</string>
+    <string name="recyclerview_example">RecyclerView Example</string>
+    <string name="scrollview_example">ScrollView Example</string>
+    <string name="to">To :</string>
+    <string name="bcc">Bcc :</string>
+    <string name="cc">Cc :</string>
+</resources>

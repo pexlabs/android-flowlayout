@@ -1,9 +1,10 @@
-package org.apmem.tools.example;
+package org.apmem.tools.example.ui;
 
 import android.app.Activity;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+
+import org.apmem.tools.example.R;
 import org.apmem.tools.example.helpers.TestAdapter;
 import org.apmem.tools.example.helpers.TestModel;
 import org.apmem.tools.layouts.FlowLayoutManager;

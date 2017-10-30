@@ -40,13 +40,6 @@ public class AstroDragListener implements View.OnDragListener {
                     targetView.setBackgroundDrawable(mDragEnterShapeDrawable);
                 }
 
-                AstroFlowLayout targetContainer = (AstroFlowLayout) targetView.getParent();
-                // Check if the container in which we are dropping a view is collapsed or not
-                // if it is collapsed, then expand it
-                if (targetContainer.isCollapsed()) {
-                    targetContainer.forceExpand();
-                }
-
                 break;
 
             case DragEvent.ACTION_DRAG_EXITED:
@@ -65,7 +58,13 @@ public class AstroDragListener implements View.OnDragListener {
                 final AstroFlowLayout sourceContainer = (AstroFlowLayout) sourceView.getParent();
 
                 // get the target container
-                targetContainer = (AstroFlowLayout) targetView.getParent();
+                final AstroFlowLayout targetContainer = (AstroFlowLayout) targetView.getParent();
+
+                // Check if the container in which we are dropping a view is collapsed or not
+                // if it is collapsed, then expand it
+                if (targetContainer.isCollapsed()) {
+                    targetContainer.forceExpand();
+                }
 
                 // now get the position of source view in source container
                 int sourcePosition = ViewUtil.getViewPositionInParent(sourceContainer, sourceView);

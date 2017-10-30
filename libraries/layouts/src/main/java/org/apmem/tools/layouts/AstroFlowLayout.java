@@ -81,6 +81,11 @@ public class AstroFlowLayout extends FlowLayout {
      */
     @Override
     public void collapse() {
+        // There is nothing to collapse
+        if(getChildCount() == 0) {
+            return;
+        }
+
         // First create temp list to hold all the views of first row of the flow layout
         List<View> views = new ArrayList<>();
 
@@ -91,13 +96,29 @@ public class AstroFlowLayout extends FlowLayout {
 
         // Get the views present at first line / row
         LineDefinition lineDefinition = getLines().get(0);
-        for (ViewDefinition viewDefinition : lineDefinition.getViews()) {
-            // now add this views to our temp list
-            views.add(viewDefinition.getView());
-            // And simultaneously removed from hidden views, as views of first row should not be
-            // hidden
-            mHiddenViews.remove(viewDefinition.getView());
+        // Get count of the views present in the first row
+        int count = lineDefinition.getViews().size();
+
+        // So if first view contains only one view then add +n view to next line,
+        // else add +n view to next of the first view of the first row
+        // if the count is 1 then +n view should be added in the next line
+        // that means we need to add this view in Views list & remove from hiddenviews as
+        // this view will be visible
+        if (count == 1) {
+            views.add(lineDefinition.getViews().get(0).getView());
+            mHiddenViews.remove(lineDefinition.getViews().get(0).getView());
+        } else {
+            for (int i = 0; i < count; i++) {
+                ViewDefinition viewDefinition = lineDefinition.getViews().get(i);
+                // if the count is more than one that means we need to add +n view to next of the
+                // first view of the first row only show first view & hide all views
+                if (i == 0) {
+                    views.add(viewDefinition.getView());
+                    mHiddenViews.remove(viewDefinition.getView());
+                }
+            }
         }
+
 
         // just call remove all views to clear layout, this would remove our
         // autocomplete view also. Obviously!
@@ -200,16 +221,21 @@ public class AstroFlowLayout extends FlowLayout {
         // Remove the view at that particular position
         removeView(view);
 
-        // Call onChipRemoved for removed chip
-        if (mChipListener != null) {
-            mChipListener.onChipRemoved(removedChip);
-        }
-
         // remove the chip from cache
         mChipMap.remove(view);
 
         // invalidate the view
         invalidate();
+
+        // reset the hint text
+        if(getChildCount() == 1) {
+            setHint(mHintText);
+        }
+
+        // Call onChipRemoved for removed chip
+        if (mChipListener != null) {
+            mChipListener.onChipRemoved(removedChip);
+        }
     }
 
     /**
