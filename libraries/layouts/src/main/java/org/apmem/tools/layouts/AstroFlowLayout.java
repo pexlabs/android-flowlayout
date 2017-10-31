@@ -189,6 +189,7 @@ public class AstroFlowLayout extends FlowLayout {
             @Override
             public void onClick(View v) {
                 forceExpand();
+                mAutoCompleteTextView.requestFocus();
             }
         });
         countView.setTextSize(mCountViewTextSize);
@@ -326,6 +327,7 @@ public class AstroFlowLayout extends FlowLayout {
                 // simply expand it
                 if (mHiddenViews.size() >= 1) {
                     expand();
+                    mAutoCompleteTextView.requestFocus();
                     return true;
                 }
                 ClipData data = ClipData.newPlainText(String.valueOf(view.getId()), "");
