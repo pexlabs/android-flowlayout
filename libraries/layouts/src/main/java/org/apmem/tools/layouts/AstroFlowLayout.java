@@ -22,6 +22,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
@@ -249,6 +250,7 @@ public class AstroFlowLayout extends FlowLayout {
         if (mChipListener != null) {
             mChipListener.onChipAdded(mChipMap.get(view));
         }
+        mAutoCompleteTextView.setHint("");
     }
 
     /**
@@ -275,6 +277,7 @@ public class AstroFlowLayout extends FlowLayout {
         if (mChipListener != null) {
             mChipListener.onChipAdded(chipInterface);
         }
+        mAutoCompleteTextView.setHint("");
     }
 
     /**

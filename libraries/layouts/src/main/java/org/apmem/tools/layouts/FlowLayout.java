@@ -8,12 +8,14 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Build;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -34,6 +36,7 @@ import org.apmem.tools.listeners.AstroDragListener;
 import org.apmem.tools.model.ChipInterface;
 import org.apmem.tools.util.Utils;
 import org.apmem.tools.util.ViewUtil;
+import org.apmem.tools.views.AstroAutoCompleteView;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -245,6 +248,12 @@ public abstract class FlowLayout extends ViewGroup {
     private void initAutoCompleteView() {
         // Create a new Instance
         mAutoCompleteTextView = new MultiAutoCompleteTextView(getContext());
+        FlowLayout.LayoutParams params = (LayoutParams) mAutoCompleteTextView.getLayoutParams();
+        if (params == null) {
+            params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+        mAutoCompleteTextView.setLayoutParams(params);
 
         int padding = ViewUtil.dpToPx(DEFAULT_PADDING);
         mAutoCompleteTextView.setPadding(padding, padding, padding, padding);
@@ -325,6 +334,29 @@ public abstract class FlowLayout extends ViewGroup {
                 if (TextUtils.isEmpty(s) || s.length() < 2) {
                     return;
                 }
+
+                // At run time check the length of the AutoCompleteView characters
+                LineDefinition lastLine = mLines.get(mLines.size()-1);
+                ViewDefinition viewDefinition = lastLine.getViews().get(lastLine.getViews().size()-1);
+                int remaining = mConfig.getMaxLength() - lastLine.getLineLength() +
+                        viewDefinition.getSpacingLength();
+                Rect bounds = new Rect();
+                Paint textPaint = mAutoCompleteTextView.getPaint();
+                String text = s.toString();
+                textPaint.getTextBounds(text, 0, text.length(), bounds);
+                int width = bounds.width();
+                FlowLayout.LayoutParams params = (FlowLayout.LayoutParams)
+                        mAutoCompleteTextView.getLayoutParams();
+                // If length of characters is greater than the remaining width then change the
+                // width of AutoCompleteView
+                if (width > remaining) {
+                    params.width = ViewUtil.getDeviceWidth();
+                } else {
+                    params.width = remaining;
+                }
+                mAutoCompleteTextView.setLayoutParams(params);
+                FlowLayout.this.invalidate();
+
                 if (s.charAt(s.length() - 1) == ' ' && s.charAt(s.length() - 2) != ' ') {
                     // add only if it is valid email address
                     if (Utils.isValidEmailAddress(s.toString().trim())) {
@@ -345,9 +377,12 @@ public abstract class FlowLayout extends ViewGroup {
         mAutoCompleteTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
+                Log.d(LOG_TAG, "hasFocus " + hasFocus);
                 if (!hasFocus) {
                     // if focus is lost then hide the cursor forcefully
                     mAutoCompleteTextView.setCursorVisible(false);
+                    mAutoCompleteTextView.setActivated(false);
+                    mAutoCompleteTextView.setPressed(false);
                     // lost the focus. check if there is a text
                     String text = mAutoCompleteTextView.getText().toString().trim();
                     if (!TextUtils.isEmpty(text)) {
@@ -356,9 +391,6 @@ public abstract class FlowLayout extends ViewGroup {
                             int chipPosition = getChildCount() - 1;
                             addChipAt(chipView, chipPosition);
                         }
-                        // hmm.. not sure if we have to do this, if focus is lost & entered text
-                        // is invalid clear the AutoCompleteTextView
-                        mAutoCompleteTextView.setText("");
                     }
                     // If no focus then collapse
                     if (mLines.size() > 1) {
@@ -367,6 +399,8 @@ public abstract class FlowLayout extends ViewGroup {
                 } else {
                     // if focus is gained then show the cursor forcefully
                     mAutoCompleteTextView.setCursorVisible(true);
+                    mAutoCompleteTextView.setActivated(true);
+                    mAutoCompleteTextView.setPressed(true);
                     // If AutoCompleteView gets the focus then expand
                     expand();
                 }

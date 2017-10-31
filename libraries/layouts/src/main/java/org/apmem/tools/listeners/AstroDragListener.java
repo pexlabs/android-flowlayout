@@ -90,11 +90,6 @@ public class AstroDragListener implements View.OnDragListener {
                         // else we will simply add view before it
                         targetPosition = targetContainer.getChildCount() - 2;
                     }
-                } else {
-                    // don't decrement value if view is dropped on first i.e. 0th position
-                    if (targetPosition > 0) {
-                        targetPosition--;
-                    }
                 }
 
                 // Now we have figured out which view will be dropped at which point.
