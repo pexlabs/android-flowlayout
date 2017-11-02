@@ -35,19 +35,6 @@ public class LineDefinition {
     }
 
     public boolean canFit(ViewDefinition child) {
-        if (child.getView() instanceof MultiAutoCompleteTextView) {
-            int remaining = config.getMaxLength() - lineLength + child.getSpacingLength();
-            MultiAutoCompleteTextView view = (MultiAutoCompleteTextView) child.getView();
-            Rect bounds = new Rect();
-            Paint textPaint = view.getPaint();
-            String text = view.getText().toString();
-            textPaint.getTextBounds(text, 0, text.length(), bounds);
-            int width = bounds.width();
-            FlowLayout.LayoutParams params = (FlowLayout.LayoutParams) view.getLayoutParams();
-            params.width = remaining;
-            view.setLayoutParams(params);
-            return width <= config.getMaxLength() / 5;
-        }
         return lineLength + child.getLength() + child.getSpacingLength() <= config.getMaxLength();
     }
 
