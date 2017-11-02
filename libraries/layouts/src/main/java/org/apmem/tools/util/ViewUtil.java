@@ -15,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.MultiAutoCompleteTextView;
 
 public class ViewUtil {
 
@@ -103,6 +104,26 @@ public class ViewUtil {
         boolean found = false;
         for (position = 0; position < parent.getChildCount(); position++) {
             if (parent.getChildAt(position) == child) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            return -1;
+        }
+        return position;
+    }
+
+    /**
+     * returns the position of MultiAutoCompleteTextView in current parent
+     * @param parent
+     * @return
+     */
+    public static int getPositionOfAutoCompleteTextView(ViewGroup parent) {
+        int position;
+        boolean found = false;
+        for (position = 0; position < parent.getChildCount(); position++) {
+            if (parent.getChildAt(position) instanceof MultiAutoCompleteTextView) {
                 found = true;
                 break;
             }

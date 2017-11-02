@@ -54,11 +54,38 @@ public class AstroDragListener implements View.OnDragListener {
                 // get the source view
                 final View sourceView = (View) event.getLocalState();
 
-                // get the source container
+                // Source & target positions of views
+                // Target position is position where user wants to drop a view
+                int targetPosition = -1;
+                // Source position is a position of a view which user is trying to drop
+                int sourcePosition = -1;
+
+                // Get the source container
                 final AstroFlowLayout sourceContainer = (AstroFlowLayout) sourceView.getParent();
 
-                // get the target container
-                final AstroFlowLayout targetContainer = (AstroFlowLayout) targetView.getParent();
+                // As we have set drag listener to {@link AstroFlowLayout} we must consider the case
+                // of dropping a view on AstroFlowLayout
+                AstroFlowLayout targetContainer;
+                // If user dropped view on AstroFlowLayout
+                if (targetView instanceof AstroFlowLayout) {
+                    targetContainer = (AstroFlowLayout) targetView;
+                    // Find the position of MultiAutoCompleteTextView in that parent
+                    targetPosition = ViewUtil.getPositionOfAutoCompleteTextView(targetContainer);
+                    // If there are more than 1 views, just drop before MultiAutoCompleteTextView
+                    if (targetPosition > 0) {
+                        targetPosition--;
+                    }
+                } else {
+                    // This means, user has dropped on ChipView or MultiAutoCompleteTextView
+                    // get the target container
+                    targetContainer = (AstroFlowLayout) targetView.getParent();
+                    // Now get the position of target view so that we can drop source view
+                    // according to target position
+                    targetPosition = ViewUtil.getViewPositionInParent(targetContainer, targetView);
+                    if (targetPosition == -1) {
+                        return true;
+                    }
+                }
 
                 // Check if the container in which we are dropping a view is collapsed or not
                 // if it is collapsed, then expand it
@@ -67,15 +94,8 @@ public class AstroDragListener implements View.OnDragListener {
                 }
 
                 // now get the position of source view in source container
-                int sourcePosition = ViewUtil.getViewPositionInParent(sourceContainer, sourceView);
+                sourcePosition = ViewUtil.getViewPositionInParent(sourceContainer, sourceView);
                 if (sourcePosition == -1) {
-                    return true;
-                }
-
-                // get position of target view in target container
-                // this is nothing but our target DROP position
-                int targetPosition = ViewUtil.getViewPositionInParent(targetContainer, targetView);
-                if (targetPosition == -1) {
                     return true;
                 }
 
@@ -96,10 +116,13 @@ public class AstroDragListener implements View.OnDragListener {
                 // Now deal with the objects
                 ChipInterface chipInterface = sourceContainer.getChipMap().get(sourceView);
 
+                // As we had set visibility of source view to GONE, its time to make it visible
+                // just for safety
                 sourceView.setVisibility(View.VISIBLE);
+                // As drop action is complete, remove source view from source target container
                 sourceContainer.removeChildView(sourceView);
 
-                // add view to target container
+                // And add source view to target container
                 targetContainer.addChipAtPositionWithChip(sourceView, chipInterface, targetPosition);
                 break;
 
