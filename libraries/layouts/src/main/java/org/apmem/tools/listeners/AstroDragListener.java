@@ -88,7 +88,7 @@ public class AstroDragListener implements View.OnDragListener {
                         targetPosition = 0;
                     } else {
                         // else we will simply add view before it
-                        targetPosition = targetContainer.getChildCount() - 2;
+                        targetPosition = targetContainer.getChildCount() - 1;
                     }
                 }
 

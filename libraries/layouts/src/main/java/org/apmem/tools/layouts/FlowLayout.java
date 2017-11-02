@@ -36,7 +36,6 @@ import org.apmem.tools.listeners.AstroDragListener;
 import org.apmem.tools.model.ChipInterface;
 import org.apmem.tools.util.Utils;
 import org.apmem.tools.util.ViewUtil;
-import org.apmem.tools.views.AstroAutoCompleteView;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -56,7 +55,7 @@ public abstract class FlowLayout extends ViewGroup {
     protected MultiAutoCompleteTextView mAutoCompleteTextView;
 
     // hint of AutoCompleteTextView
-    protected String mHintText;
+    protected String mHintText = "";
 
     // color related attributes
     protected int mChipDetailedTextColor;
@@ -255,12 +254,11 @@ public abstract class FlowLayout extends ViewGroup {
         }
         mAutoCompleteTextView.setLayoutParams(params);
 
-        int padding = ViewUtil.dpToPx(DEFAULT_PADDING);
+        final int padding = ViewUtil.dpToPx(DEFAULT_PADDING);
         mAutoCompleteTextView.setPadding(padding, padding, padding, padding);
 
         mAutoCompleteTextView.setGravity(Gravity.CENTER_VERTICAL);
         // set the hint
-        mHintText = getResources().getString(R.string.astro_autocomplete_hint);
         mAutoCompleteTextView.setHint(mHintText);
         mAutoCompleteTextView.setBackgroundResource(android.R.color.transparent);
 
@@ -331,10 +329,6 @@ public abstract class FlowLayout extends ViewGroup {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (TextUtils.isEmpty(s) || s.length() < 2) {
-                    return;
-                }
-
                 // At run time check the length of the AutoCompleteView characters
                 LineDefinition lastLine = mLines.get(mLines.size()-1);
                 ViewDefinition viewDefinition = lastLine.getViews().get(lastLine.getViews().size()-1);
@@ -357,7 +351,7 @@ public abstract class FlowLayout extends ViewGroup {
                 mAutoCompleteTextView.setLayoutParams(params);
                 FlowLayout.this.invalidate();
 
-                if (s.charAt(s.length() - 1) == ' ' && s.charAt(s.length() - 2) != ' ') {
+                if (s.length() >= 2 && s.charAt(s.length() - 1) == ' ' && s.charAt(s.length() - 2) != ' ') {
                     // add only if it is valid email address
                     if (Utils.isValidEmailAddress(s.toString().trim())) {
                         mAutoCompleteTextView.setText("");

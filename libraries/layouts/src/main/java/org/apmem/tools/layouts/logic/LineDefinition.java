@@ -2,8 +2,6 @@ package org.apmem.tools.layouts.logic;
 
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
-import android.view.View;
 import android.widget.MultiAutoCompleteTextView;
 
 import org.apmem.tools.layouts.FlowLayout;

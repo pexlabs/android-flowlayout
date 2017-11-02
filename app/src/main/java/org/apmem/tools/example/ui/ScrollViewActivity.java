@@ -33,15 +33,15 @@ public class ScrollViewActivity extends Activity {
         // Bind to/cc/bcc views one by one
         final AstroFlowLayout toView = (AstroFlowLayout) findViewById(R.id.to_view);
         toView.setAutoCompleteViewAdapter(autoCompleteAdapter);
-        toView.setHint("to");
+        //toView.setHint("to");
 
         final AstroFlowLayout ccView = (AstroFlowLayout) findViewById(R.id.cc_view);
         ccView.setAutoCompleteViewAdapter(autoCompleteAdapter);
-        ccView.setHint("cc");
+        //ccView.setHint("cc");
 
         final AstroFlowLayout bccView = (AstroFlowLayout) findViewById(R.id.bcc_view);
         bccView.setAutoCompleteViewAdapter(autoCompleteAdapter);
-        bccView.setHint("bcc");
+        //bccView.setHint("bcc");
 
         // Create chip listener & share them with all the to/cc/bcc views
         ChipListener chipListener = new ChipListener() {

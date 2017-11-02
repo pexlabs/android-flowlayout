@@ -325,7 +325,7 @@ public class AstroFlowLayout extends FlowLayout {
             public boolean onLongClick(View view) {
                 // if a chip in a view is long clicked, but the parent is collapsed
                 // simply expand it
-                if (mHiddenViews.size() >= 1) {
+                if (isCollapsed()) {
                     expand();
                     mAutoCompleteTextView.requestFocus();
                     return true;
