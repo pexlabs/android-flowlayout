@@ -17,6 +17,7 @@ import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.FlowViewHolder> {
 
+    // Tell recycler adapter how many rows we want
     private static final int INPUT_COUNT = 3;
 
     // Chips listener

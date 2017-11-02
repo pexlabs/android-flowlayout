@@ -74,6 +74,27 @@ public class AstroFlowLayout extends FlowLayout {
     public AstroFlowLayout(Context context, AttributeSet attributeSet, int defStyle) {
         super(context, attributeSet, defStyle);
         mAstroDragListener = new AstroDragListener();
+        // The below lines work as a hack. As we are using MultiAutoCompleteTextView it should
+        // resize itself on invalidation of the layout. Now this will not happen if we set with of
+        // MultiAutoCompleteTextView to MATCH_PARENT. Also, we want MultiAutoCompleteTextView to be
+        // the last member in the layout. So what we just set minimum width of MultiAutoCompleteTextView
+        // to 20px, so whenever user types/copies/pastes it will expand. And flow layout will
+        // decide where to put it. As we are setting its min width to 20 & its width to WRAP_CONTENT
+        // it MultiAutoCompleteTextView will not listen to click it is clicked outside.
+        // We are mocking click & drag behaviour
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isCollapsed()) {
+                    expand();
+                }
+                mAutoCompleteTextView.setText(" ");
+                mAutoCompleteTextView.requestFocus();
+            }
+        });
+        // This is important as user can drop outside the view, so it is important that our view
+        // listens to DragEvents
+        setOnDragListener(mAstroDragListener);
     }
 
     /**
@@ -251,7 +272,8 @@ public class AstroFlowLayout extends FlowLayout {
         if (mChipListener != null) {
             mChipListener.onChipAdded(mChipMap.get(view));
         }
-        mAutoCompleteTextView.setHint("");
+        // This will help in showing the cursor for MultiAutoCompleteTextView
+        mAutoCompleteTextView.setText(" ");
     }
 
     /**
@@ -278,7 +300,8 @@ public class AstroFlowLayout extends FlowLayout {
         if (mChipListener != null) {
             mChipListener.onChipAdded(chipInterface);
         }
-        mAutoCompleteTextView.setHint("");
+        // This will help in showing the cursor for MultiAutoCompleteTextView
+        mAutoCompleteTextView.setText(" ");
     }
 
     /**

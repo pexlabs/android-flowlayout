@@ -2,6 +2,8 @@ package org.apmem.tools.example.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 
 import org.apmem.tools.adapters.AutoCompleteAdapter;
@@ -18,6 +20,7 @@ import static org.apmem.tools.example.helpers.Utils.getDummyData;
  */
 public class ScrollViewActivity extends Activity {
 
+    // TAG for logging..
     private static final String LOG_TAG = "##ScrollViewActivity";
 
     @Override
@@ -33,15 +36,12 @@ public class ScrollViewActivity extends Activity {
         // Bind to/cc/bcc views one by one
         final AstroFlowLayout toView = (AstroFlowLayout) findViewById(R.id.to_view);
         toView.setAutoCompleteViewAdapter(autoCompleteAdapter);
-        //toView.setHint("to");
 
         final AstroFlowLayout ccView = (AstroFlowLayout) findViewById(R.id.cc_view);
         ccView.setAutoCompleteViewAdapter(autoCompleteAdapter);
-        //ccView.setHint("cc");
 
         final AstroFlowLayout bccView = (AstroFlowLayout) findViewById(R.id.bcc_view);
         bccView.setAutoCompleteViewAdapter(autoCompleteAdapter);
-        //bccView.setHint("bcc");
 
         // Create chip listener & share them with all the to/cc/bcc views
         ChipListener chipListener = new ChipListener() {
@@ -60,6 +60,24 @@ public class ScrollViewActivity extends Activity {
         toView.setChipListener(chipListener);
         ccView.setChipListener(chipListener);
         bccView.setChipListener(chipListener);
+
+        // Set text watcher for autocomplete view to get the events of text change
+        toView.setTextWatcher(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d(LOG_TAG, "onTextChanged " + s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     /**

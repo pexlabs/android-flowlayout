@@ -45,12 +45,14 @@ public abstract class FlowLayout extends ViewGroup {
 
     private static final String LOG_TAG = FlowLayout.class.getSimpleName();
     private static final int DEFAULT_PADDING = 8;
-
+    private static final int MIN_WIDTH = 20;
 
     private final ConfigDefinition mConfig;
     private List<LineDefinition> mLines = new ArrayList<>();
     private List<ViewDefinition> mViews = new ArrayList<>();
 
+    // TextWatcher to watch of text change events
+    private TextWatcher mTextWatcher;
     // Our beloved AutoCompleteTextView
     protected MultiAutoCompleteTextView mAutoCompleteTextView;
 
@@ -244,15 +246,21 @@ public abstract class FlowLayout extends ViewGroup {
         mAutoCompleteTextView.setDropDownAnchor(id);
     }
 
+    public void setTextWatcher(TextWatcher textWatcher) {
+        mTextWatcher = textWatcher;
+    }
+
     private void initAutoCompleteView() {
         // Create a new Instance
         mAutoCompleteTextView = new MultiAutoCompleteTextView(getContext());
-        FlowLayout.LayoutParams params = (LayoutParams) mAutoCompleteTextView.getLayoutParams();
-        if (params == null) {
-            params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-        }
-        mAutoCompleteTextView.setLayoutParams(params);
+        // Set min width to 20px. Resizing will not happen if we set with of
+        // MultiAutoCompleteTextView to MATCH_PARENT. Also, we want MultiAutoCompleteTextView to be
+        // the last member in the layout. So what we just set minimum width of MultiAutoCompleteTextView
+        // to 20px, so whenever user types/copies/pastes it will expand. And flow layout will
+        // decide where to put it.
+        mAutoCompleteTextView.setMinWidth(MIN_WIDTH);
+        // This is kind of hack to show cursor. We will handle all trim related functionalities
+        mAutoCompleteTextView.setText(" ");
 
         final int padding = ViewUtil.dpToPx(DEFAULT_PADDING);
         mAutoCompleteTextView.setPadding(padding, padding, padding, padding);
@@ -312,44 +320,37 @@ public abstract class FlowLayout extends ViewGroup {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN
                         && event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
-                    // remove last chip
-                    if (getChildCount() > 1 && mAutoCompleteTextView.getText().toString().length() == 0)
+                    // Remove last chip.
+                    if (getChildCount() > 1 && mAutoCompleteTextView.getText().toString().length() <= 1) {
                         removeChipAt(getChildCount() - 2);
+                        return true;
+                    }
                 }
                 return false;
             }
         });
 
-        // Add text wachter, if at all user pressed <Space> add the text before that as a chip
+        // Add text watcher, if at all user pressed <Space> add the text before that as a chip
         mAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                // TODO optimize this later
+                // Not sure why added chip is calling this method. Hence ignoring text change
+                // events fired by chip.
+                if (!(s.toString().contains("model.Chip"))) {
+                    if (mTextWatcher != null) {
+                        mTextWatcher.onTextChanged(s, start, count, after);
+                    }
+                }
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // At run time check the length of the AutoCompleteView characters
-                LineDefinition lastLine = mLines.get(mLines.size()-1);
-                ViewDefinition viewDefinition = lastLine.getViews().get(lastLine.getViews().size()-1);
-                int remaining = mConfig.getMaxLength() - lastLine.getLineLength() +
-                        viewDefinition.getSpacingLength();
-                Rect bounds = new Rect();
-                Paint textPaint = mAutoCompleteTextView.getPaint();
-                String text = s.toString();
-                textPaint.getTextBounds(text, 0, text.length(), bounds);
-                int width = bounds.width();
-                FlowLayout.LayoutParams params = (FlowLayout.LayoutParams)
-                        mAutoCompleteTextView.getLayoutParams();
-                // If length of characters is greater than the remaining width then change the
-                // width of AutoCompleteView
-                if (width > remaining) {
-                    params.width = ViewUtil.getDeviceWidth();
-                } else {
-                    params.width = remaining;
+                if (!(s.toString().contains("model.Chip"))) {
+                    if (mTextWatcher != null) {
+                        mTextWatcher.onTextChanged(s, start, before, count);
+                    }
                 }
-                mAutoCompleteTextView.setLayoutParams(params);
-                FlowLayout.this.invalidate();
 
                 if (s.length() >= 2 && s.charAt(s.length() - 1) == ' ' && s.charAt(s.length() - 2) != ' ') {
                     // add only if it is valid email address
@@ -364,14 +365,17 @@ public abstract class FlowLayout extends ViewGroup {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                if (!(s.toString().contains("model.Chip"))) {
+                    if (mTextWatcher != null) {
+                        mTextWatcher.afterTextChanged(s);
+                    }
+                }
             }
         });
 
         mAutoCompleteTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                Log.d(LOG_TAG, "hasFocus " + hasFocus);
                 if (!hasFocus) {
                     // if focus is lost then hide the cursor forcefully
                     mAutoCompleteTextView.setCursorVisible(false);
