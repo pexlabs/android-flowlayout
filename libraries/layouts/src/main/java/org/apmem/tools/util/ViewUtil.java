@@ -15,10 +15,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-<<<<<<< HEAD
 import android.widget.MultiAutoCompleteTextView;
-=======
->>>>>>> 2944497f2a8b3c0a311860bcc587721bd99afe3a
 
 public class ViewUtil {
 
