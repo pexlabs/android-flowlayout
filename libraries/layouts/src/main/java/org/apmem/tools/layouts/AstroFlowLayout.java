@@ -14,6 +14,7 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -210,7 +211,6 @@ public class AstroFlowLayout extends FlowLayout {
             @Override
             public void onClick(View v) {
                 forceExpand();
-                mAutoCompleteTextView.requestFocus();
             }
         });
         countView.setTextSize(mCountViewTextSize);
@@ -449,12 +449,14 @@ public class AstroFlowLayout extends FlowLayout {
                 }
             });
 
+            Rect rect = new Rect();
+            mClickedView.getGlobalVisibleRect(rect);
             // Anchor the dialog to where the user clicked.
             WindowManager.LayoutParams wmlp = getWindow().getAttributes();
             wmlp.gravity = Gravity.TOP | Gravity.START;
-            wmlp.x = (int) mClickedView.getX();
+            wmlp.x = rect.centerX()/2;
             FlowLayout flowLayout = (FlowLayout) mClickedView.getParent();
-            wmlp.y = (int) ((int) mClickedView.getY() + flowLayout.getY());
+            wmlp.y = rect.centerY() - (rect.height()*2);
 
             // Don't let the dialog look like we are stealing all focus from the user.
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);

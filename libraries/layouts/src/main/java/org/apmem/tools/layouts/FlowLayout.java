@@ -282,7 +282,7 @@ public abstract class FlowLayout extends ViewGroup {
         mAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mAutoCompleteTextView.setText("");
+                // Ask for a view from children class
                 View chipView = getObjectView(mAutoCompleteTextView.getAdapter().getItem(position));
                 int chipPosition = getChildCount() - 1;
                 addChipAt(chipView, chipPosition);
@@ -301,6 +301,7 @@ public abstract class FlowLayout extends ViewGroup {
                     if (TextUtils.isEmpty(text)) {
                         return true;
                     }
+                    // If typed/entered text is not valid email address, return
                     if (!Utils.isValidEmailAddress(text)) {
                         return true;
                     }
