@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="tile_letter_font_size">17sp</dimen>
+    <dimen name="letter_tile_size">32dp</dimen>
+
+    <dimen name="detail_view_height">80dp</dimen>
+    <dimen name="detail_view_width">300dp</dimen>
+
+    <dimen name="chip_view_text_padding">2dp</dimen>
+    <dimen name="chip_view_label_text_size">16sp</dimen>
+    <dimen name="count_view_label_text_size">6sp</dimen>
+    <dimen name="chip_view_border_size">1dp</dimen>
+    <dimen name="count_view_padding">5dp</dimen>
+
+</resources>

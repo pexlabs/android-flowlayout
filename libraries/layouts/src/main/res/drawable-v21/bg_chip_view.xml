@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+        android:color="?android:attr/colorControlHighlight">
+    <item android:id="@+id/ripper_inner_item" >
+        <shape
+            android:shape="rectangle">
+            <solid android:color="@color/chips_background"/>
+            <corners android:radius="16dp"/>
+        </shape>
+    </item>
+</ripple>
