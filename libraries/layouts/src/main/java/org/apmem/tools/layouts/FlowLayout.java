@@ -302,7 +302,7 @@ public abstract class FlowLayout extends ViewGroup {
                         return true;
                     }
                     // If typed/entered text is not valid email address, return
-                    if (!Utils.isValidEmailAddress(text)) {
+                    if (!Utils.isValidEmailAddress(text.trim())) {
                         return true;
                     }
                     mAutoCompleteTextView.setText("");
@@ -353,7 +353,8 @@ public abstract class FlowLayout extends ViewGroup {
                     }
                 }
 
-                if (s.length() >= 2 && s.charAt(s.length() - 1) == ' ' && s.charAt(s.length() - 2) != ' ') {
+                // Commenting below code for now.
+                /*if (s.length() >= 2 && s.charAt(s.length() - 1) == ' ' && s.charAt(s.length() - 2) != ' ') {
                     // add only if it is valid email address
                     if (Utils.isValidEmailAddress(s.toString().trim())) {
                         mAutoCompleteTextView.setText("");
@@ -361,7 +362,7 @@ public abstract class FlowLayout extends ViewGroup {
                         int chipPosition = getChildCount() - 1;
                         addChipAt(chipView, chipPosition);
                     }
-                }
+                }*/
             }
 
             @Override
