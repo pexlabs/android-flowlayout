@@ -51,6 +51,9 @@ public class AstroFlowLayout extends FlowLayout {
     // TAG for logging
     private static final String LOG_TAG = AstroFlowLayout.class.getSimpleName();
 
+    // Flag to tell if the current view is collapsed or not. Initialially view is not collapsed
+    private boolean mIsCollapsed = false;
+
     // When this FlowLayout is collapsed we hold data in this set
     private Set<View> mHiddenViews = new HashSet<>();
 
@@ -156,10 +159,10 @@ public class AstroFlowLayout extends FlowLayout {
         // if we have views to hide, show them as count
         if (mHiddenViews.size() > 0) {
             addView(getCountView("+" + mHiddenViews.size()));
-        } else {
-            // else add our beloved autocomplete view
-            addAutoCompleteView();
         }
+
+        // set collapsed to true
+        mIsCollapsed = true;
     }
 
     /**
@@ -181,7 +184,9 @@ public class AstroFlowLayout extends FlowLayout {
      */
     public void forceExpand() {
         // Remove the last count text view
-        removeViewAt(getChildCount() - 1);
+        if (getChildCount() > 1) {
+            removeViewAt(getChildCount() - 1);
+        }
 
         // Iterate over all the hidden views
         for (View view : mHiddenViews) {
@@ -191,9 +196,13 @@ public class AstroFlowLayout extends FlowLayout {
 
         // Add over beloved Auto complete text view.
         addAutoCompleteView();
+        mAutoCompleteTextView.setText(" ");
 
         // clear the added hidden views
         mHiddenViews.clear();
+
+        // set collapsed to false
+        mIsCollapsed = false;
     }
 
     /**
@@ -377,8 +386,8 @@ public class AstroFlowLayout extends FlowLayout {
         public void onClick(final View v) {
             // if a chip in a view is long clicked, but the parent is collapsed
             // simply expand it
-            if (mHiddenViews.size() >= 1) {
-                expand();
+            if (mIsCollapsed) {
+                forceExpand();
                 return;
             }
 
@@ -494,7 +503,7 @@ public class AstroFlowLayout extends FlowLayout {
      * @return
      */
     public boolean isCollapsed() {
-        return mHiddenViews != null && mHiddenViews.size() > 0;
+        return mIsCollapsed;
     }
 
     /**

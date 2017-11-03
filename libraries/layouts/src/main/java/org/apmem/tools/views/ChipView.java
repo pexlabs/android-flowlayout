@@ -91,6 +91,7 @@ public class ChipView extends RelativeLayout {
         mContentLayout = (LinearLayout) rootView.findViewById(R.id.content);
         mAvatarIconImageView = (CircleImageView) rootView.findViewById(R.id.icon);
         mLabelTextView = (TextView) rootView.findViewById(R.id.label);
+        mLabelTextView.setSingleLine();
         mDeleteButton = (ImageView) rootView.findViewById(R.id.delete_button);
 
         // letter tile provider
