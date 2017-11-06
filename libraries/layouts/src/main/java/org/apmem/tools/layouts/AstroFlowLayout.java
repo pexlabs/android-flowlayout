@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -89,10 +90,14 @@ public class AstroFlowLayout extends FlowLayout {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!TextUtils.isEmpty(mAutoCompleteTextView.getText().toString().trim())) {
+                    return;
+                }
                 if (isCollapsed()) {
                     expand();
                 }
                 mAutoCompleteTextView.setText(" ");
+                showSoftKeyboard();
                 mAutoCompleteTextView.requestFocus();
             }
         });
@@ -144,7 +149,6 @@ public class AstroFlowLayout extends FlowLayout {
                 }
             }
         }
-
 
         // just call remove all views to clear layout, this would remove our
         // autocomplete view also. Obviously!
@@ -239,6 +243,13 @@ public class AstroFlowLayout extends FlowLayout {
         View view = getChildAt(position);
 
         removeChildView(view);
+    }
+
+    @Override
+    public ChipInterface getChipAt(int position) {
+        // Find the view at that position
+        View view = getChildAt(position);
+        return mChipMap.get(view);
     }
 
     /**

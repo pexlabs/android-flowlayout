@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Filterable;
@@ -33,6 +34,7 @@ import org.apmem.tools.layouts.logic.ConfigDefinition;
 import org.apmem.tools.layouts.logic.LineDefinition;
 import org.apmem.tools.layouts.logic.ViewDefinition;
 import org.apmem.tools.listeners.AstroDragListener;
+import org.apmem.tools.model.Chip;
 import org.apmem.tools.model.ChipInterface;
 import org.apmem.tools.util.Utils;
 import org.apmem.tools.util.ViewUtil;
@@ -53,6 +55,9 @@ public abstract class FlowLayout extends ViewGroup {
 
     // TextWatcher to watch of text change events
     private TextWatcher mTextWatcher;
+
+    private OnFocusChangeListener mFocusChangeListener;
+
     // Our beloved AutoCompleteTextView
     protected MultiAutoCompleteTextView mAutoCompleteTextView;
 
@@ -315,7 +320,9 @@ public abstract class FlowLayout extends ViewGroup {
             }
         });
 
-        // if user pressed delete button, remove the chip
+        // If user presses delete button, on keyboard, we will remove the chip at the last position
+        // and set its value to the autocomplete view
+        // This allows pressing of us to edit the address
         mAutoCompleteTextView.setOnKeyListener(new OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -323,7 +330,12 @@ public abstract class FlowLayout extends ViewGroup {
                         && event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
                     // Remove last chip.
                     if (getChildCount() > 1 && mAutoCompleteTextView.getText().toString().length() <= 1) {
+                        // Before removing last chip, capture its value
+                        ChipInterface chip = getChipAt(getChildCount() - 2);
                         removeChipAt(getChildCount() - 2);
+                        // And show it in an edit text
+                        mAutoCompleteTextView.setText(chip.getInfo());
+                        mAutoCompleteTextView.setSelection(mAutoCompleteTextView.getText().length());
                         return true;
                     }
                 }
@@ -404,6 +416,9 @@ public abstract class FlowLayout extends ViewGroup {
                     // If AutoCompleteView gets the focus then expand
                     expand();
                 }
+                if (mFocusChangeListener != null) {
+                    mFocusChangeListener.onFocusChange(v, hasFocus);
+                }
             }
         });
 
@@ -422,6 +437,12 @@ public abstract class FlowLayout extends ViewGroup {
     public abstract void addChipAt(View view, int position);
 
     public abstract List<ChipInterface> getObjects();
+
+    public abstract ChipInterface getChipAt(int position);
+
+    public void setOnFocusChangeListener(OnFocusChangeListener focusChangeListener) {
+        mFocusChangeListener = focusChangeListener;
+    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -772,5 +793,33 @@ public abstract class FlowLayout extends ViewGroup {
 
     public List<LineDefinition> getLines() {
         return mLines;
+    }
+
+    protected void showSoftKeyboard() {
+        final InputMethodManager inputMethodManager =
+                (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManager == null) {
+            return;
+        }
+        mAutoCompleteTextView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                inputMethodManager.showSoftInput(mAutoCompleteTextView, 0);
+            }
+        }, 100);
+    }
+
+    protected void hideSoftKeyboard() {
+        final InputMethodManager inputMethodManager =
+                (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManager == null) {
+            return;
+        }
+        mAutoCompleteTextView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                inputMethodManager.hideSoftInputFromWindow(mAutoCompleteTextView.getWindowToken(), 0);
+            }
+        }, 100);
     }
 }
