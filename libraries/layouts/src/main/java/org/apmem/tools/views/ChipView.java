@@ -63,6 +63,8 @@ public class ChipView extends RelativeLayout {
     private LetterTileProvider mLetterTileProvider;
     // chip
     private ChipInterface mChip;
+    // Maximum width of this chip
+    private int mMaxWidth;
 
     public ChipView(Context context) {
         super(context);
@@ -210,6 +212,25 @@ public class ChipView extends RelativeLayout {
             endPadding = 0;
         }
         mLabelTextView.setPaddingRelative(startPadding, 0, endPadding, 0);
+    }
+
+    /**
+     * Don't make this ChipView go beyond the max width
+     * @param widthMeasureSpec
+     * @param heightMeasureSpec
+     */
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
+        if (mMaxWidth > 0 && mMaxWidth < measuredWidth) {
+            int measureMode = MeasureSpec.getMode(widthMeasureSpec);
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxWidth, measureMode);
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    public void setMaxWidth(int maxWidth) {
+        mMaxWidth = maxWidth;
     }
 
     /**

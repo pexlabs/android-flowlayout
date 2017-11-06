@@ -69,6 +69,7 @@ public class DetailedChipView extends RelativeLayout {
         mContentLayout = (RelativeLayout) rootView.findViewById(R.id.content);
         mAvatarIconImageView = (CircleImageView) rootView.findViewById(R.id.avatar_icon);
         mNameTextView = (TextView) rootView.findViewById(R.id.name);
+        mNameTextView.setSelected(true);
         mInfoTextView = (TextView) rootView.findViewById(R.id.info);
         mDeleteButton = (ImageView) rootView.findViewById(R.id.delete_button);
 

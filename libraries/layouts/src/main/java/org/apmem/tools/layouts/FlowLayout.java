@@ -64,6 +64,8 @@ public abstract class FlowLayout extends ViewGroup {
     // hint of AutoCompleteTextView
     protected String mHintText = "";
 
+    protected int mMaxWidth = 0;
+
     // color related attributes
     protected int mChipDetailedTextColor;
     protected int mChipDetailedDeleteIconColor;
@@ -472,6 +474,7 @@ public abstract class FlowLayout extends ViewGroup {
             mViews.add(view);
         }
 
+        mMaxWidth = MeasureSpec.getSize(widthMeasureSpec) - this.getPaddingRight() - this.getPaddingLeft();
         this.mConfig.setMaxWidth(MeasureSpec.getSize(widthMeasureSpec) - this.getPaddingRight() - this.getPaddingLeft());
         this.mConfig.setMaxHeight(MeasureSpec.getSize(heightMeasureSpec) - this.getPaddingTop() - this.getPaddingBottom());
         this.mConfig.setWidthMode(MeasureSpec.getMode(widthMeasureSpec));

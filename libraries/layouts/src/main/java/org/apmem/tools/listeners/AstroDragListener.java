@@ -130,7 +130,7 @@ public class AstroDragListener implements View.OnDragListener {
                 // at the ent of drag event, check if event was successful or not
                 // if not then restore the visibility of the view to VISIBLE
                 // event.getResult() == false when user drags a view out of screen, or on a view
-                // which does not listens to drag events
+                // which does not listen to drag events
                 if (!event.getResult()) {
                     final View localView = (View) event.getLocalState();
                     final FlowLayout localViewParent = (FlowLayout) localView.getParent();

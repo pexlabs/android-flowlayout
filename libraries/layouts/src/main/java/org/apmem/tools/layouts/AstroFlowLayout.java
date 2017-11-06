@@ -383,6 +383,8 @@ public class AstroFlowLayout extends FlowLayout {
                 return true;
             }
         });
+        // Don't let chip view occupy full width
+        chipView.setMaxWidth(mMaxWidth - 100);
         // Update cache
         mChipMap.put(chipView, chipInterface);
         return chipView;
