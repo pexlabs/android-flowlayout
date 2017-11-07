@@ -200,18 +200,6 @@ public class ChipView extends RelativeLayout {
         if (labelTextSizePixels > 0) {
             mLabelTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, labelTextSizePixels);
         }
-
-        // If the avatar image is there, let's honor that padding that was specified
-        // (default is 0), otherwise, use our default padding everywhere.
-        int startPadding = ViewUtil.dpToPx(12);
-        int endPadding = ViewUtil.dpToPx(12);
-        if (mAvatarIconImageView.getVisibility() == VISIBLE) {
-            startPadding = mLabelAvatarPadding;
-        }
-        if (mDeleteButton.getVisibility() == VISIBLE) {
-            endPadding = 0;
-        }
-        mLabelTextView.setPaddingRelative(startPadding, 0, endPadding, 0);
     }
 
     /**

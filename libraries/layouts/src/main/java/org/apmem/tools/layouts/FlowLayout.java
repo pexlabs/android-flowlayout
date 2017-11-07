@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Build;
 import android.text.Editable;
 import android.text.InputType;
@@ -34,7 +33,6 @@ import org.apmem.tools.layouts.logic.ConfigDefinition;
 import org.apmem.tools.layouts.logic.LineDefinition;
 import org.apmem.tools.layouts.logic.ViewDefinition;
 import org.apmem.tools.listeners.AstroDragListener;
-import org.apmem.tools.model.Chip;
 import org.apmem.tools.model.ChipInterface;
 import org.apmem.tools.util.Utils;
 import org.apmem.tools.util.ViewUtil;
@@ -330,6 +328,14 @@ public abstract class FlowLayout extends ViewGroup {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN
                         && event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
+
+                    // Avoid deleting first space so that cursor will always be shown
+                    if (getChildCount() == 1) {
+                        if (mAutoCompleteTextView.length() == 0) {
+                            mAutoCompleteTextView.setText(" ");
+                        }
+                        return true;
+                    }
                     // Remove last chip.
                     if (getChildCount() > 1 && mAutoCompleteTextView.getText().toString().length() <= 1) {
                         // Before removing last chip, capture its value
@@ -367,7 +373,7 @@ public abstract class FlowLayout extends ViewGroup {
                     }
                 }
 
-                // Commenting below code for now.
+                // TODO.. Commenting below code for now.
                 /*if (s.length() >= 2 && s.charAt(s.length() - 1) == ' ' && s.charAt(s.length() - 2) != ' ') {
                     // add only if it is valid email address
                     if (Utils.isValidEmailAddress(s.toString().trim())) {
@@ -475,7 +481,7 @@ public abstract class FlowLayout extends ViewGroup {
         }
 
         mMaxWidth = MeasureSpec.getSize(widthMeasureSpec) - this.getPaddingRight() - this.getPaddingLeft();
-        this.mConfig.setMaxWidth(MeasureSpec.getSize(widthMeasureSpec) - this.getPaddingRight() - this.getPaddingLeft());
+        this.mConfig.setMaxWidth(mMaxWidth);
         this.mConfig.setMaxHeight(MeasureSpec.getSize(heightMeasureSpec) - this.getPaddingTop() - this.getPaddingBottom());
         this.mConfig.setWidthMode(MeasureSpec.getMode(widthMeasureSpec));
         this.mConfig.setHeightMode(MeasureSpec.getMode(heightMeasureSpec));

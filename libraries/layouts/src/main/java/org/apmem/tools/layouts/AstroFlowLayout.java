@@ -23,6 +23,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -48,6 +49,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class AstroFlowLayout extends FlowLayout {
+
+    // This is the value by which we will be reducing width of AutoCompleteView
+    private static final int MARGIN = 100;
 
     // TAG for logging
     private static final String LOG_TAG = AstroFlowLayout.class.getSimpleName();
@@ -369,7 +373,7 @@ public class AstroFlowLayout extends FlowLayout {
                 // if a chip in a view is long clicked, but the parent is collapsed
                 // simply expand it
                 if (isCollapsed()) {
-                    expand();
+                    forceExpand();
                     mAutoCompleteTextView.requestFocus();
                     return true;
                 }
@@ -384,7 +388,7 @@ public class AstroFlowLayout extends FlowLayout {
             }
         });
         // Don't let chip view occupy full width
-        chipView.setMaxWidth(mMaxWidth - 100);
+        chipView.setMaxWidth(mMaxWidth - MARGIN);
         // Update cache
         mChipMap.put(chipView, chipInterface);
         return chipView;
