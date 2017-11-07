@@ -374,7 +374,7 @@ public class AstroFlowLayout extends FlowLayout {
                 // simply expand it
                 if (isCollapsed()) {
                     forceExpand();
-                    mAutoCompleteTextView.requestFocus();
+                    hideSoftKeyboard();
                     return true;
                 }
                 ClipData data = ClipData.newPlainText(String.valueOf(view.getId()), "");
@@ -582,6 +582,9 @@ public class AstroFlowLayout extends FlowLayout {
         };
     }
 
+    public void clearAutoCompleteFocus() {
+        mAutoCompleteTextView.clearFocus();
+    }
 
     @Override
     public Parcelable onSaveInstanceState() {
