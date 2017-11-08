@@ -19,19 +19,16 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 
 import org.apmem.tools.layouts.R;
 import org.apmem.tools.model.ChipInterface;
 import org.apmem.tools.util.LetterTileProvider;
 import org.apmem.tools.util.ViewUtil;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChipView extends RelativeLayout {
 
@@ -40,7 +37,7 @@ public class ChipView extends RelativeLayout {
     private Context mContext;
     // xml elements
     private LinearLayout mContentLayout;
-    private CircleImageView mAvatarIconImageView;
+    private ChipAvatarImageView mAvatarIconImageView;
     private TextView mLabelTextView;
     private ImageView mDeleteButton;
     // attributes
@@ -91,7 +88,7 @@ public class ChipView extends RelativeLayout {
         View rootView = inflate(getContext(), R.layout.chip_view, this);
 
         mContentLayout = (LinearLayout) rootView.findViewById(R.id.content);
-        mAvatarIconImageView = (CircleImageView) rootView.findViewById(R.id.icon);
+        mAvatarIconImageView = (ChipAvatarImageView) rootView.findViewById(R.id.icon);
         mLabelTextView = (TextView) rootView.findViewById(R.id.label);
         mLabelTextView.setSingleLine();
         mDeleteButton = (ImageView) rootView.findViewById(R.id.delete_button);

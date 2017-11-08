@@ -17,7 +17,7 @@
         android:clickable="true">
 
         <!-- avatar icon -->
-        <de.hdodenhof.circleimageview.CircleImageView
+        <org.apmem.tools.views.ChipAvatarImageView
             android:id="@+id/avatar_icon"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -69,7 +69,7 @@
         </LinearLayout>
 
         <!-- delete button -->
-        <ImageView
+        <org.apmem.tools.views.ChipAvatarImageView
             android:id="@+id/delete_button"
             android:layout_width="30dp"
             android:layout_height="30dp"

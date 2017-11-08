@@ -14,12 +14,11 @@ import android.widget.TextView;
 import org.apmem.tools.layouts.R;
 import org.apmem.tools.model.ChipInterface;
 import org.apmem.tools.util.LetterTileProvider;
+import org.apmem.tools.views.ChipAvatarImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by kaustubh on 27/10/17.
@@ -65,7 +64,7 @@ public final class AutoCompleteAdapter<T extends ChipInterface> extends BaseAdap
             convertView = LayoutInflater.from(parent.getContext()).inflate(
                     R.layout.item_autocomplete, null);
             holder = new ViewHolder();
-            holder.mAvatar = (CircleImageView) convertView.findViewById(R.id.image);
+            holder.mAvatar = (ChipAvatarImageView) convertView.findViewById(R.id.image);
             holder.mLabel = (TextView) convertView.findViewById(R.id.email);
             holder.mInfo = (TextView) convertView.findViewById(R.id.name);
             convertView.setTag(holder);
@@ -97,7 +96,7 @@ public final class AutoCompleteAdapter<T extends ChipInterface> extends BaseAdap
     static class ViewHolder {
         TextView mLabel;
         TextView mInfo;
-        CircleImageView mAvatar;
+        ChipAvatarImageView mAvatar;
     }
 
     private class AstroFilter extends Filter {

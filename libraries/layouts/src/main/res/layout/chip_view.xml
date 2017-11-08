@@ -13,7 +13,7 @@
         android:background="@drawable/bg_chip_view">
 
         <!-- avatar -->
-        <de.hdodenhof.circleimageview.CircleImageView
+        <org.apmem.tools.views.ChipAvatarImageView
             android:id="@+id/icon"
             android:layout_width="32dp"
             android:layout_height="32dp"

@@ -7,16 +7,13 @@
 package org.apmem.tools.views;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -26,8 +23,6 @@ import org.apmem.tools.model.ChipInterface;
 import org.apmem.tools.util.ColorUtil;
 import org.apmem.tools.util.LetterTileProvider;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
 
 public class DetailedChipView extends RelativeLayout {
 
@@ -36,7 +31,7 @@ public class DetailedChipView extends RelativeLayout {
     private Context mContext;
     // xml elements
     private RelativeLayout mContentLayout;
-    private CircleImageView mAvatarIconImageView;
+    private ChipAvatarImageView mAvatarIconImageView;
     private TextView mNameTextView;
     private TextView mInfoTextView;
     private ImageView mDeleteButton;
@@ -67,7 +62,7 @@ public class DetailedChipView extends RelativeLayout {
         View rootView = inflate(getContext(), R.layout.detailed_chip_view, this);
 
         mContentLayout = (RelativeLayout) rootView.findViewById(R.id.content);
-        mAvatarIconImageView = (CircleImageView) rootView.findViewById(R.id.avatar_icon);
+        mAvatarIconImageView = (ChipAvatarImageView) rootView.findViewById(R.id.avatar_icon);
         mNameTextView = (TextView) rootView.findViewById(R.id.name);
         mNameTextView.setSelected(true);
         mInfoTextView = (TextView) rootView.findViewById(R.id.info);
