@@ -40,11 +40,11 @@
     </declare-styleable>
 
     <declare-styleable name="ChipAvatarImageView">
-        <attr name="mode" format="enum">
-            <enum name="circle" value="0"/>
-            <enum name="round_rect" value="1"/>
+        <attr name="image_mode" format="enum">
+            <enum name="image_circle" value="0"/>
+            <enum name="image_round_rect" value="1"/>
         </attr>
-        <attr name="corner_radius" format="dimension"/>
+        <attr name="image_corner_radius" format="dimension"/>
     </declare-styleable>
 
 </resources>

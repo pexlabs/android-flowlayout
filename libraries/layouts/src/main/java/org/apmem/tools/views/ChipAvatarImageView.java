@@ -120,8 +120,8 @@ public class ChipAvatarImageView extends ImageView {
                 R.styleable.ChipAvatarImageView, 0, 0);
         try {
             mode = Mode.values()[
-                    attributes.getInt(R.styleable.ChipAvatarImageView_mode, Mode.CIRCLE.ordinal())];
-            cornerRadius = attributes.getDimension(R.styleable.ChipAvatarImageView_corner_radius, 4f);
+                    attributes.getInt(R.styleable.ChipAvatarImageView_image_mode, Mode.CIRCLE.ordinal())];
+            cornerRadius = attributes.getDimension(R.styleable.ChipAvatarImageView_image_corner_radius, 4f);
         } finally {
             attributes.recycle();
         }
