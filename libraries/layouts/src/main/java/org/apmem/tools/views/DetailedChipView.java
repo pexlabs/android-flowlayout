@@ -67,6 +67,7 @@ public class DetailedChipView extends RelativeLayout {
         mNameTextView = (TextView) rootView.findViewById(R.id.name);
         mNameTextView.setSelected(true);
         mInfoTextView = (TextView) rootView.findViewById(R.id.info);
+        mInfoTextView.setSelected(true);
         mDeleteButton = (ImageView) rootView.findViewById(R.id.delete_button);
 
         // letter tile provider

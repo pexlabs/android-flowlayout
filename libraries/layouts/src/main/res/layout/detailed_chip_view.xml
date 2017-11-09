@@ -4,6 +4,7 @@
     android:layout_width="231dp"
     android:layout_height="48dp"
     android:focusableInTouchMode="true"
+    android:background="@drawable/bg_chip_view_opened"
     android:focusable="true"
     android:clickable="true">
     
@@ -56,9 +57,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:ellipsize="end"
-                android:maxLines="1"
+                android:singleLine="true"
                 android:textColor="@android:color/darker_gray"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:text="paul@astro-inc.com"/>
 
