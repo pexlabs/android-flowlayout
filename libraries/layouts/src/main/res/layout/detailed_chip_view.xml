@@ -1,42 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/container"
-    android:layout_width="@dimen/detail_view_width"
-    android:layout_height="@dimen/detail_view_height"
+    android:layout_width="231dp"
+    android:layout_height="48dp"
     android:focusableInTouchMode="true"
     android:focusable="true"
     android:clickable="true">
     
     <!-- content -->
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/bg_chip_view_opened"
-        android:elevation="6dp"
+        android:orientation="horizontal"
         android:clickable="true">
 
         <!-- avatar icon -->
         <org.apmem.tools.views.ChipAvatarImageView
             android:id="@+id/avatar_icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
-            android:layout_centerVertical="true"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="center_vertical"
             android:src="@drawable/avatar"/>
 
         <!-- info -->
         <LinearLayout
             android:id="@+id/info_layout"
             android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/avatar_icon"
-            android:layout_toLeftOf="@+id/delete_button"
-            android:layout_centerVertical="true"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp">
+            android:layout_width="132dp"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginRight="16dp">
 
             <!-- name -->
             <TextView
@@ -50,35 +47,31 @@
                 android:focusableInTouchMode="true"
                 android:textColor="@color/white"
                 android:scrollHorizontally="true"
-                android:textSize="16sp"
-                android:text="Contact name sdfdsfdsfdgs"/>
+                android:textSize="14sp"
+                android:text="Contact name"/>
 
             <!-- info -->
             <TextView
                 android:id="@+id/info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:textSize="14sp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@android:color/darker_gray"
                 android:scrollHorizontally="true"
-                android:text="paul@gmail.comdfdgdgsdggdgdgdgdsgdgdgdg"/>
+                android:text="paul@astro-inc.com"/>
 
         </LinearLayout>
 
         <!-- delete button -->
         <org.apmem.tools.views.ChipAvatarImageView
             android:id="@+id/delete_button"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="8dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
             android:src="@drawable/ic_cancel_white_24dp"/>
         
-    </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>

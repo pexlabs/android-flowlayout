@@ -15,8 +15,12 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewDebug;
 import android.view.ViewGroup;
@@ -36,6 +40,7 @@ import org.apmem.tools.listeners.AstroDragListener;
 import org.apmem.tools.model.ChipInterface;
 import org.apmem.tools.util.Utils;
 import org.apmem.tools.util.ViewUtil;
+import org.apmem.tools.views.CopyPasteOptions;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -73,6 +78,8 @@ public abstract class FlowLayout extends ViewGroup {
     protected boolean mShowChipDetailed = true;
     protected float mCountViewTextSize;
     protected int mChipBorderColor;
+    protected int mTextSize;
+    protected int mTextColor;
 
     public FlowLayout(Context context) {
         super(context);
@@ -119,16 +126,22 @@ public abstract class FlowLayout extends ViewGroup {
                     getResources().getColor(R.color.white));
             mChipDetailedBackgroundColor = a.getColor(R.styleable.
                             FlowLayout_chip_detailed_backgroundColor,
-                    getResources().getColor(R.color.astroViolet700));
+                    getResources().getColor(R.color.astroBlack));
             mChipDetailedDeleteIconColor = a.getColor(R.styleable.
                             FlowLayout_chip_detailed_deleteIconColor,
                     getResources().getColor(android.R.color.transparent));
             mChipBackgroundColor = a.getColor(R.styleable.FlowLayout_chip_backgroundColor,
                     getResources().getColor(R.color.astroBlack100));
             mCountViewTextColor = a.getColor(R.styleable.FlowLayout_count_view_text_color,
-                    getResources().getColor(R.color.astroBlack200));
+                    getResources().getColor(R.color.astroBlack700));
             mChipBorderColor = a.getColor(R.styleable.FlowLayout_count_view_border_color,
                     getResources().getColor(R.color.blue900));
+            mTextColor = a.getColor(R.styleable.FlowLayout_autocompletview_text_color,
+                    getResources().getColor(R.color.astroBlack));
+
+            // Size related initialization
+            mTextSize = a.getDimensionPixelSize(R.styleable.FlowLayout_autocompletview_text_size,
+                    ViewUtil.dpToPx(14));
 
             // show chip detailed
             mShowChipDetailed = a.getBoolean(R.styleable.FlowLayout_showChipDetailed, true);
@@ -243,6 +256,32 @@ public abstract class FlowLayout extends ViewGroup {
     }
 
     /**
+     * Sets Text color for AutoCompleteView
+     * @param textColor
+     */
+    public void setTextColor(int textColor) {
+        mTextColor = textColor;
+        mAutoCompleteTextView.setTextColor(textColor);
+    }
+
+    /**
+     * Sets Text size for AutoCompleteView
+     * @param textSize
+     */
+    public void setTextSize(int textSize) {
+        mTextSize = textSize;
+        mAutoCompleteTextView.setTextSize(textSize);
+    }
+
+    /**
+     * Returns mAutoCompleteTextView
+     * @return
+     */
+    public MultiAutoCompleteTextView getAutoCompleteTextView() {
+        return mAutoCompleteTextView;
+    }
+
+    /**
      * DropDownAnchor layout id
      *
      * @param id
@@ -258,6 +297,7 @@ public abstract class FlowLayout extends ViewGroup {
     private void initAutoCompleteView() {
         // Create a new Instance
         mAutoCompleteTextView = new MultiAutoCompleteTextView(getContext());
+        mAutoCompleteTextView.setTextColor(mTextColor);
         // Set min width to 20px. Resizing will not happen if we set with of
         // MultiAutoCompleteTextView to MATCH_PARENT. Also, we want MultiAutoCompleteTextView to be
         // the last member in the layout. So what we just set minimum width of MultiAutoCompleteTextView
@@ -432,6 +472,38 @@ public abstract class FlowLayout extends ViewGroup {
 
         // AutoCompleteView should also listen for Dragging events
         mAutoCompleteTextView.setOnDragListener(new AstroDragListener());
+
+
+        OnLongClickListener longClickListener = new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                new CopyPasteOptions(v.getContext(), mAutoCompleteTextView).show();
+                return true;
+            }
+        };
+
+        mAutoCompleteTextView.setLongClickable(false);
+        mAutoCompleteTextView.setTextIsSelectable(false);
+        mAutoCompleteTextView.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
+
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            public void onDestroyActionMode(ActionMode mode) {
+            }
+
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                return false;
+            }
+        });
+        mAutoCompleteTextView.setOnLongClickListener(longClickListener);
+        mAutoCompleteTextView.setClickable(false);
+        setOnLongClickListener(longClickListener);
     }
 
     public abstract void collapse();

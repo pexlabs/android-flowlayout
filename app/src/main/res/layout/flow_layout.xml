@@ -3,8 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:f="http://schemas.android.com/apk/res-auto"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="@android:color/black">
+        android:layout_height="fill_parent">
 
     <org.apmem.tools.layouts.AstroFlowLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -13,7 +12,6 @@
         f:layoutDirection="ltr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/black"
         android:id="@+id/flowLayout1"/>
 
     <org.apmem.tools.layouts.AstroFlowLayout
@@ -25,7 +23,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:layout_below="@id/flowLayout1"
-        android:background="@android:color/black"
         android:id="@+id/flowLayout2"/>
 
     <TextView

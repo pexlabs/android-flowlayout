@@ -2,10 +2,9 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.example.recyclersample.ScrollViewActivity">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="vertical"
@@ -21,6 +20,7 @@
             <TextView
                 android:text="@string/to"
                 android:layout_marginRight="8dp"
+                android:textColor="@color/astroBlack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -44,6 +44,7 @@
                 android:text="@string/cc"
                 android:layout_gravity="center"
                 android:layout_marginRight="8dp"
+                android:textColor="@color/astroBlack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -66,6 +67,7 @@
             <TextView
                 android:text="@string/bcc"
                 android:layout_marginRight="8dp"
+                android:textColor="@color/astroBlack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

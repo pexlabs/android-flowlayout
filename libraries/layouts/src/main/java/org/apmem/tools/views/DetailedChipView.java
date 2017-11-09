@@ -15,6 +15,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -30,7 +31,7 @@ public class DetailedChipView extends RelativeLayout {
     // context
     private Context mContext;
     // xml elements
-    private RelativeLayout mContentLayout;
+    private LinearLayout mContentLayout;
     private ChipAvatarImageView mAvatarIconImageView;
     private TextView mNameTextView;
     private TextView mInfoTextView;
@@ -61,7 +62,7 @@ public class DetailedChipView extends RelativeLayout {
         // inflate layout
         View rootView = inflate(getContext(), R.layout.detailed_chip_view, this);
 
-        mContentLayout = (RelativeLayout) rootView.findViewById(R.id.content);
+        mContentLayout = (LinearLayout) rootView.findViewById(R.id.content);
         mAvatarIconImageView = (ChipAvatarImageView) rootView.findViewById(R.id.avatar_icon);
         mNameTextView = (TextView) rootView.findViewById(R.id.name);
         mNameTextView.setSelected(true);

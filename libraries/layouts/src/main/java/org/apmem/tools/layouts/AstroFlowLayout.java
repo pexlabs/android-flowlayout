@@ -1,8 +1,8 @@
 /**
  * AstroFlowLayout.java
- *
+ * <p>
  * Created by kaustubh on 26/10/17.
- *
+ * <p>
  * AstroFlowLayout extends {@link org.apmem.tools.layouts.FlowLayout} which abstract
  * Helps in expanding/collapsing layout
  * Also helps in creating & removing views
@@ -13,7 +13,6 @@ package org.apmem.tools.layouts;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -23,9 +22,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
@@ -95,6 +92,7 @@ public class AstroFlowLayout extends FlowLayout {
             @Override
             public void onClick(View v) {
                 if (!TextUtils.isEmpty(mAutoCompleteTextView.getText().toString().trim())) {
+                    showSoftKeyboard();
                     return;
                 }
                 if (isCollapsed()) {
@@ -117,7 +115,7 @@ public class AstroFlowLayout extends FlowLayout {
     @Override
     public void collapse() {
         // There is nothing to collapse
-        if(getChildCount() == 0) {
+        if (getChildCount() == 0) {
             return;
         }
 
@@ -215,6 +213,7 @@ public class AstroFlowLayout extends FlowLayout {
 
     /**
      * generates TextVuew which holds count of the hidden views
+     *
      * @param text : count of views present after 1st line
      * @return
      */
@@ -239,6 +238,7 @@ public class AstroFlowLayout extends FlowLayout {
 
     /**
      * Removes chip at that particular position
+     *
      * @param position : position at which the chip is supposed to be removed
      */
     @Override
@@ -259,6 +259,7 @@ public class AstroFlowLayout extends FlowLayout {
     /**
      * Called by {@link #removeChipAt(int)} & {@link AstroDragListener} to remove the view
      * also updates cache
+     *
      * @param view
      */
     public void removeChildView(View view) {
@@ -275,7 +276,7 @@ public class AstroFlowLayout extends FlowLayout {
         invalidate();
 
         // reset the hint text
-        if(getChildCount() == 1) {
+        if (getChildCount() == 1) {
             setHint(mHintText);
         }
 
@@ -287,6 +288,7 @@ public class AstroFlowLayout extends FlowLayout {
 
     /**
      * Adds chip at particular position
+     *
      * @param view
      * @param position
      */
@@ -302,6 +304,7 @@ public class AstroFlowLayout extends FlowLayout {
 
     /**
      * Helper method for setting chip listener
+     *
      * @param listener
      */
     public void setChipListener(ChipListener listener) {
@@ -311,6 +314,7 @@ public class AstroFlowLayout extends FlowLayout {
     /**
      * Similar to {@link #addChipAt(View, int) but instead of taking value from cache,
      * chip's value is passed, helpful in case of drag/drop event to avoid data corruption
+     *
      * @param view
      * @param chipInterface
      * @param position
@@ -331,6 +335,7 @@ public class AstroFlowLayout extends FlowLayout {
     /**
      * This is called by parent class to add the view
      * Creates a ChipView with specific item. Which can be String or {@link Chip}
+     *
      * @param item
      * @return
      */
@@ -350,8 +355,6 @@ public class AstroFlowLayout extends FlowLayout {
         int padding = (int) getResources().getDimension(R.dimen.chip_view_text_padding);
         chipView.setPadding(padding, padding, padding, padding);
         chipView.setHasAvatarIcon(true);
-        chipView.setChipBorderColor((int) getResources().getDimension(R.dimen.chip_view_border_size),
-                mChipBorderColor);
         chipView.setOnClickListener(new ChipClickListener());
         chipView.setOnDragListener(mAstroDragListener);
         chipView.setLongClickable(true);
@@ -416,6 +419,7 @@ public class AstroFlowLayout extends FlowLayout {
 
     /**
      * Creates a detailed view with chip data.
+     *
      * @param chip
      * @return
      */
@@ -480,9 +484,9 @@ public class AstroFlowLayout extends FlowLayout {
             // Anchor the dialog to where the user clicked.
             WindowManager.LayoutParams wmlp = getWindow().getAttributes();
             wmlp.gravity = Gravity.TOP | Gravity.START;
-            wmlp.x = rect.centerX()/2;
+            wmlp.x = rect.centerX() / 2;
             FlowLayout flowLayout = (FlowLayout) mClickedView.getParent();
-            wmlp.y = rect.centerY() - (rect.height()*2);
+            wmlp.y = rect.centerY() - (rect.height() * 2);
 
             // Don't let the dialog look like we are stealing all focus from the user.
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
@@ -495,6 +499,7 @@ public class AstroFlowLayout extends FlowLayout {
     /**
      * Called by {@link AstroDragListener} to read Cache value
      * However updation is done only in {@link #addChipAt(View, int)} & {@link #removeChipAt(int)}
+     *
      * @return
      */
     public Map<View, ChipInterface> getChipMap() {
@@ -503,6 +508,7 @@ public class AstroFlowLayout extends FlowLayout {
 
     /**
      * Returns the current chips' values.
+     *
      * @return
      */
     public List<ChipInterface> getObjects() {
@@ -517,6 +523,7 @@ public class AstroFlowLayout extends FlowLayout {
 
     /**
      * returns if the current layout is collapsed or not
+     *
      * @return
      */
     public boolean isCollapsed() {
@@ -525,6 +532,7 @@ public class AstroFlowLayout extends FlowLayout {
 
     /**
      * Converts Parcelable to ChipInterface
+     *
      * @param list
      * @return
      */
@@ -535,6 +543,7 @@ public class AstroFlowLayout extends FlowLayout {
 
     /**
      * Returns parcelables converted from our ChipInterface
+     *
      * @return
      */
     protected ArrayList<Parcelable> getParcelableObjects() {
@@ -604,7 +613,7 @@ public class AstroFlowLayout extends FlowLayout {
         SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
         List<ChipInterface> list = convertParcelableArrayToObjectArray(ss.baseObjects);
-        for (int i=0; i<list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             addChipAt(getObjectView(list.get(i)), i);
         }
 

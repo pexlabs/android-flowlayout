@@ -12,6 +12,8 @@
         <attr name="count_view_size" format="integer" />
         <attr name="count_view_text_color" format="color" />
         <attr name="count_view_border_color" format="color" />
+        <attr name="autocompletview_text_color" format="color" />
+        <attr name="autocompletview_text_size" format="dimension" />
         <attr name="chip_backgroundColor" format="color" />
         <attr name="showChipDetailed" format="boolean" />
         <attr name="chip_detailed_textColor" format="color" />
