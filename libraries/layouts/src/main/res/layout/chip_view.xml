@@ -23,9 +23,9 @@
         <!-- label -->
         <TextView
             android:id="@+id/label"
-            android:layout_marginLeft="4dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:textColor="@color/white"
+            android:textColor="@color/astroBlack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"/>
@@ -33,6 +33,7 @@
         <!-- remove button -->
         <ImageView
             android:id="@+id/delete_button"
+            android:visibility="gone"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"

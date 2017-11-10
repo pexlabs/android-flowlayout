@@ -135,7 +135,7 @@ public abstract class FlowLayout extends ViewGroup {
             mCountViewTextColor = a.getColor(R.styleable.FlowLayout_count_view_text_color,
                     getResources().getColor(R.color.astroBlack700));
             mChipBorderColor = a.getColor(R.styleable.FlowLayout_count_view_border_color,
-                    getResources().getColor(R.color.blue900));
+                    getResources().getColor(R.color.chips_background));
             mTextColor = a.getColor(R.styleable.FlowLayout_autocompletview_text_color,
                     getResources().getColor(R.color.astroBlack));
 
@@ -378,12 +378,9 @@ public abstract class FlowLayout extends ViewGroup {
                     }
                     // Remove last chip.
                     if (getChildCount() > 1 && mAutoCompleteTextView.getText().toString().length() <= 1) {
-                        // Before removing last chip, capture its value
-                        ChipInterface chip = getChipAt(getChildCount() - 2);
                         removeChipAt(getChildCount() - 2);
                         // And show it in an edit text
-                        mAutoCompleteTextView.setText(chip.getInfo());
-                        mAutoCompleteTextView.setSelection(mAutoCompleteTextView.getText().length());
+                        mAutoCompleteTextView.setText(" ");
                         return true;
                     }
                 }

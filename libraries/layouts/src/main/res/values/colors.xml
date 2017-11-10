@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="chips_background">#E0E0E0</color>
+    <color name="chips_background">#E7E7E7</color>
     <color name="chips_label">#757575</color>
+
 
     <!-- Astro specific color palette -->
     <color name="red500">#FF4060</color>
