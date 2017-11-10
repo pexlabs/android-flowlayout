@@ -23,9 +23,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.apmem.tools.layouts.logic.LineDefinition;
@@ -325,10 +325,10 @@ public class AstroFlowLayout extends FlowLayout {
      * @return
      */
     @Override
-    public View getObjectView(Object item) {
+    public View getObjectView(Object item, boolean isAutoCompleted) {
         ChipInterface chipInterface = null;
         if (item instanceof String) {
-            chipInterface = new Chip((String) item, (String) item);
+            chipInterface = new Chip((String) item, (String) item, isAutoCompleted);
         }
         if (item instanceof ChipInterface) {
             chipInterface = (ChipInterface) item;
@@ -354,6 +354,7 @@ public class AstroFlowLayout extends FlowLayout {
                 removeChipAt(position);
             }
         });
+        chipView.setAutoCompleted(isAutoCompleted);
         // set long click listener for drag & drop functionality
         chipView.setOnLongClickListener(new OnLongClickListener() {
             @Override
@@ -396,9 +397,18 @@ public class AstroFlowLayout extends FlowLayout {
                 return;
             }
 
-            // Show detailed view as a dialog
-            final DetailedChipView detailedChipView = getDetailedChipView(mChipMap.get(v));
-            new ChipsDetailsDialog(v, detailedChipView).show();
+            ChipInterface chip = mChipMap.get(v);
+            if (((ChipView)v).isAutoCompleted()) {
+                // Show detailed view as a dialog
+                final DetailedChipView detailedChipView = getDetailedChipView(mChipMap.get(v));
+                new ChipsDetailsDialog(v, detailedChipView).show();
+            } else {
+                int position = ViewUtil.getViewPositionInParent(AstroFlowLayout.this, v);
+                if (getChildCount() > 0) {
+                    removeChipAt(position);
+                }
+                mAutoCompleteTextView.setText(chip.getInfo());
+            }
         }
     }
 
@@ -441,15 +451,24 @@ public class AstroFlowLayout extends FlowLayout {
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
+            FlowLayout flowLayout = (FlowLayout) mClickedView.getParent();
             // Don't want the title on this dialog
             requestWindowFeature(Window.FEATURE_NO_TITLE);
-            if (mDetailedView.getLayoutParams() == null) {
-                mDetailedView.setLayoutParams(new RelativeLayout.LayoutParams(
-                        (int) getResources().getDimension(R.dimen.detail_view_width),
-                        (int) getResources().getDimension(R.dimen.detail_view_height)));
-            }
+
             mDetailedView.setVisibility(VISIBLE);
             setContentView(mDetailedView);
+
+            ViewGroup.LayoutParams layoutParams = null;
+            if (mDetailedView.getLayoutParams() != null) {
+                layoutParams = mDetailedView.getLayoutParams();
+                layoutParams.width = flowLayout.getWidth();
+                layoutParams.height = LayoutParams.WRAP_CONTENT;
+            } else {
+                layoutParams = new ViewGroup.LayoutParams(flowLayout.getWidth(),
+                        LayoutParams.WRAP_CONTENT);
+            }
+            //layoutParams.setMargins(flowLayout.getLeft(), 0 , flowLayout.getRight(), 0);
+            mDetailedView.setLayoutParams(layoutParams);
 
             // remove the chip once clicked on delete image
             mDetailedView.setOnDeleteClicked(new View.OnClickListener() {
@@ -470,7 +489,6 @@ public class AstroFlowLayout extends FlowLayout {
             WindowManager.LayoutParams wmlp = getWindow().getAttributes();
             wmlp.gravity = Gravity.TOP | Gravity.START;
             wmlp.x = rect.centerX() / 2;
-            FlowLayout flowLayout = (FlowLayout) mClickedView.getParent();
             wmlp.y = rect.centerY() - (rect.height() * 2);
 
             // Don't let the dialog look like we are stealing all focus from the user.
@@ -599,7 +617,8 @@ public class AstroFlowLayout extends FlowLayout {
         super.onRestoreInstanceState(ss.getSuperState());
         List<ChipInterface> list = convertParcelableArrayToObjectArray(ss.baseObjects);
         for (int i = 0; i < list.size(); i++) {
-            addChipAt(getObjectView(list.get(i)), i);
+            ChipInterface chipInterface = list.get(i);
+            addChipAt(getObjectView(chipInterface, chipInterface.isAutoCompleted()), i);
         }
 
         // If layout is collapsed then try to request the focus

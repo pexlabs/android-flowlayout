@@ -7,6 +7,7 @@
 package org.apmem.tools.views;
 
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -15,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -62,6 +64,8 @@ public class ChipView extends RelativeLayout {
     private ChipInterface mChip;
     // Maximum width of this chip
     private int mMaxWidth;
+    // Flag to tell if the chip was populated by typing or by autocomplete
+    private boolean mIsAutoCompleted;
 
     public ChipView(Context context) {
         super(context);
@@ -250,6 +254,22 @@ public class ChipView extends RelativeLayout {
     }
 
     /**
+     * Returns if the current ChipView was created by autocomplete (by selecting dropdown) or not
+     * @return
+     */
+    public boolean isAutoCompleted() {
+        return mIsAutoCompleted;
+    }
+
+    /**
+     * Sets if current ChipView is created by autocomplete (by selecting dropdown) or not
+     * @param autoCompleted
+     */
+    public void setAutoCompleted(boolean autoCompleted) {
+        mIsAutoCompleted = autoCompleted;
+    }
+
+    /**
      * Show or hide avatar icon.
      * alee - we don't want any padding between the avatar image and the text
      *
@@ -366,6 +386,7 @@ public class ChipView extends RelativeLayout {
      *
      * @param color the color to set
      */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setChipBackgroundColor(int color) {
         mBackgroundColor = ColorStateList.valueOf(color);
         RippleDrawable newDrawable = (RippleDrawable) mContentLayout.getBackground().mutate();
@@ -392,6 +413,7 @@ public class ChipView extends RelativeLayout {
      * @param sizePixels the border size
      * @param color the color to set
      */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setChipBorderColor(int sizePixels, int color) {
         mBorderColor = ColorStateList.valueOf(color);
         RippleDrawable newDrawable = (RippleDrawable) mContentLayout.getBackground().mutate();

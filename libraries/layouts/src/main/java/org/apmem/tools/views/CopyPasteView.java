@@ -112,6 +112,14 @@ public class CopyPasteView extends RelativeLayout {
         mPaste.setVisibility(VISIBLE);
     }
 
+    public void showSelectAll() {
+        mCopy.setVisibility(GONE);
+        mCut.setVisibility(GONE);
+        mShare.setVisibility(GONE);
+        mSelectAll.setVisibility(VISIBLE);
+        mPaste.setVisibility(GONE);
+    }
+
     /**
      * Hide the view on touch outside of it
      */

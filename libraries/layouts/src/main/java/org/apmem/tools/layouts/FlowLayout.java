@@ -4,6 +4,8 @@
 
 package org.apmem.tools.layouts;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -328,7 +330,8 @@ public abstract class FlowLayout extends ViewGroup {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Ask for a view from children class
-                View chipView = getObjectView(mAutoCompleteTextView.getAdapter().getItem(position));
+                View chipView = getObjectView(mAutoCompleteTextView.getAdapter().getItem(position),
+                        true);
                 int chipPosition = getChildCount() - 1;
                 addChipAt(chipView, chipPosition);
             }
@@ -351,7 +354,7 @@ public abstract class FlowLayout extends ViewGroup {
                         return true;
                     }
                     mAutoCompleteTextView.setText("");
-                    View chipView = getObjectView(text);
+                    View chipView = getObjectView(text, false);
                     int chipPosition = getChildCount() - 1;
                     addChipAt(chipView, chipPosition);
                     return true;
@@ -444,7 +447,7 @@ public abstract class FlowLayout extends ViewGroup {
                     String text = mAutoCompleteTextView.getText().toString().trim();
                     if (!TextUtils.isEmpty(text)) {
                         if (Utils.isValidEmailAddress(text)) {
-                            View chipView = getObjectView(text);
+                            View chipView = getObjectView(text, false);
                             int chipPosition = getChildCount() - 1;
                             addChipAt(chipView, chipPosition);
                         }
@@ -507,7 +510,7 @@ public abstract class FlowLayout extends ViewGroup {
 
     public abstract void expand();
 
-    public abstract View getObjectView(Object item);
+    public abstract View getObjectView(Object item, boolean isAutoCompleted);
 
     public abstract void removeChipAt(int position);
 

@@ -89,10 +89,16 @@ public class CopyPasteOptions extends Dialog {
                         .getSystemService(Context.CLIPBOARD_SERVICE);
                 if (clipboard != null) {
                     ClipData clip = clipboard.getPrimaryClip();
-                    String text = clip.getItemAt(0).getText().toString();
-                    int start = mAutoCompleteTextView.getSelectionStart();
-                    mAutoCompleteTextView.setText(text);
-                    mAutoCompleteTextView.setSelection(mAutoCompleteTextView.getText().length());
+                    // clip can be null when there is nothing in the clipboard
+                    if (clip != null) {
+                        String text = clip.getItemAt(0).getText().toString();
+                        mAutoCompleteTextView.setText(text);
+                        mAutoCompleteTextView.setSelection(mAutoCompleteTextView.getText().length());
+                    } else {
+                        if (mAutoCompleteTextView.getText().length() > 0) {
+                            copyPasteView.showSelectAll();
+                        }
+                    }
                 }
                 dismiss();
             }

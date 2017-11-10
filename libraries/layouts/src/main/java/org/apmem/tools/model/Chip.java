@@ -25,49 +25,67 @@ public class Chip implements ChipInterface, Serializable, Parcelable {
     private String label;
     private String info;
     private String displayName;
+    private boolean isAutoCompleted;
 
-    public Chip(@NonNull Object id, @Nullable Uri avatarUri, @NonNull String label, @Nullable String info) {
+    public Chip(@NonNull Object id, @Nullable Uri avatarUri, @NonNull String label, @Nullable String info,
+            boolean isAutoCompleted) {
         this.id = id;
         this.avatarUri = avatarUri;
         this.label = label;
         this.info = info;
+        this.isAutoCompleted = isAutoCompleted;
     }
 
-    public Chip(@NonNull Object id, @Nullable Drawable avatarDrawable, @NonNull String label, @Nullable String info) {
+    public Chip(@NonNull Object id, @Nullable Drawable avatarDrawable, @NonNull String label, @Nullable String info,
+            boolean isAutoCompleted) {
         this.id = id;
         this.avatarDrawable = avatarDrawable;
         this.label = label;
         this.info = info;
+        this.isAutoCompleted = isAutoCompleted;
     }
 
-    public Chip(@Nullable Uri avatarUri, @NonNull String label, @Nullable String info) {
+    public Chip(@Nullable Uri avatarUri, @NonNull String label, @Nullable String info, boolean isAutoCompleted) {
         this.avatarUri = avatarUri;
         this.label = label;
         this.info = info;
+        this.isAutoCompleted = isAutoCompleted;
     }
 
-    public Chip(@Nullable Drawable avatarDrawable, @NonNull String label, @Nullable String info) {
+    public Chip(@Nullable Drawable avatarDrawable, @NonNull String label, @Nullable String info,
+            boolean isAutoCompleted) {
         this.avatarDrawable = avatarDrawable;
         this.label = label;
         this.info = info;
+        this.isAutoCompleted = isAutoCompleted;
     }
 
-    public Chip(@NonNull Object id, @NonNull String label, @Nullable String info) {
+    public Chip(@NonNull Object id, @NonNull String label, @Nullable String info, boolean isAutoCompleted) {
         this.id = id;
         this.label = label;
         this.info = info;
+        this.isAutoCompleted = isAutoCompleted;
     }
 
-    public Chip(@NonNull Object id, @NonNull String label, @Nullable String info, @NonNull String displayName) {
+    public Chip(@NonNull Object id, @NonNull String label, @Nullable String info, @NonNull String displayName,
+            boolean isAutoCompleted) {
         this.id = id;
         this.label = label;
         this.info = info;
         this.displayName = displayName;
+        this.isAutoCompleted = isAutoCompleted;
+    }
+
+    public Chip(@NonNull String label, @Nullable String info, boolean isAutoCompleted) {
+        this.label = label;
+        this.info = info;
+        this.isAutoCompleted = isAutoCompleted;
     }
 
     public Chip(@NonNull String label, @Nullable String info) {
         this.label = label;
         this.info = info;
+        this.isAutoCompleted = false;
     }
 
     protected Chip(Parcel in) {
@@ -75,6 +93,7 @@ public class Chip implements ChipInterface, Serializable, Parcelable {
         label = in.readString();
         info = in.readString();
         displayName = in.readString();
+        isAutoCompleted = in.readByte() == 1;
     }
 
     public static final Creator<Chip> CREATOR = new Creator<Chip>() {
@@ -120,10 +139,16 @@ public class Chip implements ChipInterface, Serializable, Parcelable {
     }
 
     @Override
+    public boolean isAutoCompleted() {
+        return isAutoCompleted;
+    }
+
+    @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(avatarUri, flags);
         dest.writeString(label);
         dest.writeString(info);
         dest.writeString(displayName);
+        dest.writeByte((byte) (isAutoCompleted ? 1 : 0));
     }
 }
