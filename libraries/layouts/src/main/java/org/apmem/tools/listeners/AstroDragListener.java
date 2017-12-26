@@ -133,9 +133,11 @@ public class AstroDragListener implements View.OnDragListener {
                 // which does not listen to drag events
                 if (!event.getResult()) {
                     final View localView = (View) event.getLocalState();
-                    final FlowLayout localViewParent = (FlowLayout) localView.getParent();
-                    localView.setVisibility(View.VISIBLE);
-                    localViewParent.invalidate();
+                    if (localView != null) {
+                        final FlowLayout localViewParent = (FlowLayout) localView.getParent();
+                        localView.setVisibility(View.VISIBLE);
+                        localViewParent.invalidate();
+                    }
                 }
         }
         return true;

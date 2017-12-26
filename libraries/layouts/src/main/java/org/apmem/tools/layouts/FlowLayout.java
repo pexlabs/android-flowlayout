@@ -11,6 +11,9 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -354,7 +357,7 @@ public abstract class FlowLayout extends ViewGroup {
                         return true;
                     }
                     mAutoCompleteTextView.setText("");
-                    View chipView = getObjectView(text, false);
+                    View chipView = getObjectView(text.trim(), false);
                     int chipPosition = getChildCount() - 1;
                     addChipAt(chipView, chipPosition);
                     return true;
