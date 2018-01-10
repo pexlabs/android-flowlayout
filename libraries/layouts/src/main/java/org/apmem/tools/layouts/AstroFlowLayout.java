@@ -234,6 +234,26 @@ public class AstroFlowLayout extends FlowLayout {
         removeChildView(view);
     }
 
+    /**
+     * Removes chip of that particular id
+     * Astro added function
+     *
+     * @param id : id of the chip is supposed to be removed
+     */
+    public void removeChipById(Object id) {
+        Set<View> keys = mChipMap.keySet();
+        // Go over all the views, get the associated ChipInterface and
+        // see if IDs match to determine if we should return that view.
+        for (View key : keys) {
+            if (mChipMap.get(key) == null) continue;
+            ChipInterface chip = mChipMap.get(key);
+            if (chip == null) continue;
+            if (chip.getId() == id) {
+                removeChildView(key);
+            }
+        }
+    }
+
     @Override
     public ChipInterface getChipAt(int position) {
         // Find the view at that position
