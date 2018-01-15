@@ -379,8 +379,9 @@ public abstract class FlowLayout extends ViewGroup {
                     if (getChildCount() == 1) {
                         if (mAutoCompleteTextView.length() == 0) {
                             mAutoCompleteTextView.setText(" ");
+                            return true;
                         }
-                        return true;
+                        return false;
                     }
                     // Remove last chip.
                     if (getChildCount() > 1 && mAutoCompleteTextView.getText().toString().length() <= 1) {
