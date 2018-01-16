@@ -176,7 +176,10 @@ public class AstroFlowLayout extends FlowLayout {
     public void forceExpand() {
         // Remove the last count text view
         if (getChildCount() > 1) {
-            removeViewAt(getChildCount() - 1);
+            View view = getChildAt(getChildCount() - 1);
+            if (view instanceof AstroFlowLayout) {
+                removeViewAt(getChildCount() - 1);
+            }
         }
 
         // Iterate over all the hidden views
