@@ -56,8 +56,9 @@ public class ChipView extends RelativeLayout {
     private ColorStateList mBorderColor;
     private int mBorderSize;
     // Padding between the label if the avatar if needed, default is 0
-    private int mLabelAvatarPadding;
+    private int mLabelAvatarPaddingExtra;
     private int mLabelTextSize;
+    private int mTextAvatarSpacing;
     // letter tile provider
     private LetterTileProvider mLetterTileProvider;
     // chip
@@ -111,8 +112,8 @@ public class ChipView extends RelativeLayout {
                 // label
                 mLabel = a.getString(R.styleable.ChipView_label);
                 mLabelColor = a.getColorStateList(R.styleable.ChipView_labelColor);
-                mLabelAvatarPadding = a.getDimensionPixelSize(
-                        R.styleable.ChipView_labelAvatarPadding, 0);
+                mLabelAvatarPaddingExtra = a.getDimensionPixelSize(
+                        R.styleable.ChipView_labelAvatarPaddingExtra, 0);
                 mLabelTextSize = a.getDimensionPixelSize(R.styleable.ChipView_labelTextSize,
                         ViewUtil.dpToPx(16));
                 // avatar icon
@@ -134,6 +135,10 @@ public class ChipView extends RelativeLayout {
                 // border size
                 mBorderSize = a.getDimensionPixelSize(R.styleable.ChipView_borderSize,
                         ViewUtil.dpToPx(2));
+
+                // Space between the text and the avatar
+                mTextAvatarSpacing = a.getDimensionPixelSize(R.styleable.ChipView_textAvatarSpacing,
+                        getResources().getDimensionPixelSize(R.dimen.text_avatar_spacing_default));
             }
             finally {
                 a.recycle();
@@ -155,7 +160,7 @@ public class ChipView extends RelativeLayout {
         setDeletable(mDeletable);
 
         // label
-        setLabel(mLabel, mLabelAvatarPadding, mLabelTextSize);
+        setLabel(mLabel, mLabelAvatarPaddingExtra, mLabelTextSize, mTextAvatarSpacing);
         if(mLabelColor != null)
             setLabelColor(mLabelColor);
 
@@ -195,11 +200,20 @@ public class ChipView extends RelativeLayout {
      *
      * @param label the label to set
      */
-    public void setLabel(String label, int mLabelAvatarPadding, int labelTextSizePixels) {
+    public void setLabel(String label, int labelAvatarPaddingExtra, int labelTextSizePixels,
+                         int labelAvatarSpacing) {
         mLabel = label;
         mLabelTextView.setText(label);
         if (labelTextSizePixels > 0) {
             mLabelTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, labelTextSizePixels);
+        }
+        if (mHasAvatarIcon) {
+            LinearLayout.LayoutParams layoutParams =
+                    (LinearLayout.LayoutParams) mLabelTextView.getLayoutParams();
+            layoutParams.leftMargin = labelAvatarSpacing;
+            mLabelTextView.setLayoutParams(layoutParams);
+            mLabelTextView.setPadding(labelAvatarPaddingExtra, mLabelTextView.getPaddingTop(),
+                    mLabelTextView.getPaddingRight(), mLabelTextView.getPaddingBottom());
         }
     }
 

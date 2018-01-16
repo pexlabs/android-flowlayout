@@ -364,7 +364,8 @@ public class AstroFlowLayout extends FlowLayout {
         // Create a chip view
         final ChipView chipView = new ChipView(getContext());
         chipView.setLabel(chipInterface.getLabel(), 0, (int) getResources()
-                .getDimension(R.dimen.chip_view_label_text_size));
+                .getDimension(R.dimen.chip_view_label_text_size),
+                getResources().getDimensionPixelSize(R.dimen.text_avatar_spacing_default));
         int padding = (int) getResources().getDimension(R.dimen.chip_view_text_padding);
         chipView.setPadding(padding, padding, padding, padding);
         chipView.setHasAvatarIcon(false);

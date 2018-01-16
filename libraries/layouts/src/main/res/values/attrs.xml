@@ -29,7 +29,7 @@
     <declare-styleable name="ChipView">
         <attr name="label" format="string" />
         <attr name="labelColor" format="color" />
-        <attr name="labelAvatarPadding" format="dimension" />
+        <attr name="labelAvatarPaddingExtra" format="dimension" />
         <attr name="labelTextSize" format="dimension" />
         <attr name="hasAvatarIcon" format="boolean" />
         <attr name="avatarIcon" format="reference" />
@@ -39,6 +39,7 @@
         <attr name="backgroundColor" format="color" />
         <attr name="borderColor" format="color" />
         <attr name="borderSize" format="dimension" />
+        <attr name="textAvatarSpacing" format="dimension" />
     </declare-styleable>
 
     <declare-styleable name="ChipAvatarImageView">
