@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -263,7 +264,10 @@ public class AstroFlowLayout extends FlowLayout {
     }
 
     @Override
-    public ChipInterface getChipAt(int position) {
+    @Nullable public ChipInterface getChipAt(int position) {
+        if (position >= getChildCount() || getChildCount() == 0) {
+            return null;
+        }
         // Find the view at that position
         View view = getChildAt(position);
         return mChipMap.get(view);
@@ -551,6 +555,31 @@ public class AstroFlowLayout extends FlowLayout {
             chips.add(mChipMap.get(key));
         }
         return chips;
+    }
+
+    /**
+     * @return all child chip views
+     */
+    public List<ChipView> getChips() {
+        List<ChipView> chipViews = new ArrayList<>();
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            if (!(view instanceof ChipView)) {
+                continue;
+            }
+            chipViews.add((ChipView) view);
+        }
+        return chipViews;
+    }
+
+    /**
+     * @return specific chip at the position
+     */
+    @Nullable public ChipView getChipViewAtPosition(int position) {
+        if (getChildCount() == 0 || getChildCount() <= position) {
+            return null;
+        }
+        return (ChipView) getChildAt(position);
     }
 
     /**

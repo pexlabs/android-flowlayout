@@ -16,4 +16,6 @@
     <string name="bcc">Bcc :</string>
     <string name="cc">Cc :</string>
     <string name="simple_example">Simple Example</string>
+    <string name="change_style">Change Style</string>
+    <string name="change_color">Change Color</string>
 </resources>

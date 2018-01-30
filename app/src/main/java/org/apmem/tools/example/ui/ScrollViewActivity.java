@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 
 import org.apmem.tools.adapters.AutoCompleteAdapter;
 import org.apmem.tools.example.R;
@@ -12,6 +13,9 @@ import org.apmem.tools.layouts.AstroFlowLayout;
 import org.apmem.tools.listeners.ChipListener;
 import org.apmem.tools.model.Chip;
 import org.apmem.tools.model.ChipInterface;
+import org.apmem.tools.views.ChipView;
+
+import java.util.List;
 
 import static org.apmem.tools.example.helpers.Utils.getDummyData;
 
@@ -22,6 +26,9 @@ public class ScrollViewActivity extends Activity {
 
     // TAG for logging..
     private static final String LOG_TAG = "##ScrollViewActivity";
+
+    private int mStyleClickCount = 0;
+    private int mColorClickCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +83,47 @@ public class ScrollViewActivity extends Activity {
             @Override
             public void afterTextChanged(Editable s) {
 
+            }
+        });
+
+        findViewById(R.id.change_style).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<ChipView> chips = toView.getChips();
+                if (chips == null) return;
+                for (ChipView chipView : chips) {
+                    if (mStyleClickCount % 2 == 0) {
+                        chipView.setLabelStyle(ChipView.TextStyle.STRIKE_THROUGH);
+                    } else {
+                        chipView.setLabelStyle(ChipView.TextStyle.UNDERLINE);
+                    }
+                }
+                mStyleClickCount++;
+            }
+        });
+
+        findViewById(R.id.change_color).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<ChipView> chips = toView.getChips();
+                if (chips == null) return;
+                for (ChipView chipView : chips) {
+                    if (mColorClickCount % 2 == 0) {
+                        chipView.setChipBackgroundColor(getResources().getColor(R.color.blue900));
+                    } else {
+                        chipView.setChipBackgroundColor(getResources().getColor(R.color.gold500A));
+                    }
+                }
+                mColorClickCount++;
+
+                ChipView chipView = toView.getChipViewAtPosition(1);
+                if (chipView != null) {
+                    if (mColorClickCount % 2 == 0) {
+                        chipView.setChipBackgroundColor(getResources().getColor(R.color.blue900));
+                    } else {
+                        chipView.setChipBackgroundColor(getResources().getColor(R.color.gold500A));
+                    }
+                }
             }
         });
     }

@@ -11,6 +11,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -67,6 +68,11 @@ public class ChipView extends RelativeLayout {
     private int mMaxWidth;
     // Flag to tell if the chip was populated by typing or by autocomplete
     private boolean mIsAutoCompleted;
+
+    public enum TextStyle {
+        STRIKE_THROUGH,
+        UNDERLINE
+    }
 
     public ChipView(Context context) {
         super(context);
@@ -147,6 +153,34 @@ public class ChipView extends RelativeLayout {
 
         // inflate
         inflateWithAttributes();
+    }
+
+    /**
+     * Sets style to a label text
+     * @param style
+     */
+    public void setLabelStyle(TextStyle style) {
+        switch (style) {
+            case UNDERLINE:
+                // Remove STRIKE_THRU_TEXT_FLAG
+                mLabelTextView.setPaintFlags(mLabelTextView.getPaintFlags()
+                        & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+
+                // Add UNDERLINE_TEXT_FLAG
+                mLabelTextView.setPaintFlags(mLabelTextView.getPaintFlags()
+                        | Paint.UNDERLINE_TEXT_FLAG);
+                break;
+
+            case STRIKE_THROUGH:
+                // Remove UNDERLINE_TEXT_FLAG
+                mLabelTextView.setPaintFlags(mLabelTextView.getPaintFlags()
+                        & (~ Paint.UNDERLINE_TEXT_FLAG));
+
+                // Add STRIKE_THRU_TEXT_FLAG
+                mLabelTextView.setPaintFlags(mLabelTextView.getPaintFlags()
+                        | Paint.STRIKE_THRU_TEXT_FLAG);
+                break;
+        }
     }
 
     /**
@@ -406,8 +440,7 @@ public class ChipView extends RelativeLayout {
         RippleDrawable newDrawable = (RippleDrawable) mContentLayout.getBackground().mutate();
         GradientDrawable drawable = (GradientDrawable) newDrawable.findDrawableByLayerId(
                 R.id.ripper_inner_item);
-        drawable.setColor(mBackgroundColor);
-        mContentLayout.setBackground(newDrawable);
+        drawable.setColor(color);
     }
 
     /**
@@ -417,7 +450,7 @@ public class ChipView extends RelativeLayout {
      * @param color the color to set
      */
     public void setChipBorderColor(int sizePixels, ColorStateList color) {
-        mBackgroundColor = color;
+        mBorderColor = color;
         setChipBorderColor(sizePixels, color.getDefaultColor());
     }
 
