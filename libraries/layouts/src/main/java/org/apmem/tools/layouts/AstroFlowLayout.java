@@ -182,7 +182,7 @@ public class AstroFlowLayout extends FlowLayout {
                 removeViewAt(getChildCount() - 1);
             }
             if (view instanceof TextView) {
-                removeChipAt(getChildCount() - 1);
+                removeViewAt(getChildCount() - 1);
             }
         }
 
