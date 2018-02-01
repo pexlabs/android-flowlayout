@@ -181,6 +181,9 @@ public class AstroFlowLayout extends FlowLayout {
             if (view instanceof AstroFlowLayout) {
                 removeViewAt(getChildCount() - 1);
             }
+            if (view instanceof TextView) {
+                removeChipAt(getChildCount() - 1);
+            }
         }
 
         // Iterate over all the hidden views

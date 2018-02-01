@@ -164,6 +164,10 @@ public abstract class FlowLayout extends ViewGroup {
     }
 
     public void addAutoCompleteView() {
+        // If AutoCompleteTextView is already added then don't add it
+        if (mAutoCompleteTextView.getParent() != null) {
+            removeView(mAutoCompleteTextView);
+        }
         addView(mAutoCompleteTextView);
     }
 
