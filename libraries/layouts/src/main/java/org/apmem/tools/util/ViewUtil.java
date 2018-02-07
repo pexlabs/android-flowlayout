@@ -101,6 +101,9 @@ public class ViewUtil {
      */
     public static int getViewPositionInParent(ViewGroup parent, View child) {
         int position;
+        if (parent == null) {
+            return -1;
+        }
         boolean found = false;
         for (position = 0; position < parent.getChildCount(); position++) {
             if (parent.getChildAt(position) == child) {

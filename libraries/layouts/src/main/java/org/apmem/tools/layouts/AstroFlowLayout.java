@@ -440,7 +440,7 @@ public class AstroFlowLayout extends FlowLayout {
                 new ChipsDetailsDialog(v, detailedChipView).show();
             } else {
                 int position = ViewUtil.getViewPositionInParent(AstroFlowLayout.this, v);
-                if (getChildCount() > 0) {
+                if (getChildCount() > 0 && position < getChildCount()) {
                     removeChipAt(position);
                 }
                 mAutoCompleteTextView.setText(chip.getInfo());
