@@ -40,6 +40,7 @@ import org.apmem.tools.views.ChipView;
 import org.apmem.tools.views.DetailedChipView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -62,7 +63,8 @@ public class AstroFlowLayout extends FlowLayout {
 
     // Simple Map to keep track of views & chips data associated with them
     // Helpful in getting final data & also in case of drag & drop
-    private Map<View, ChipInterface> mChipMap = new HashMap<>();
+    private Map<View, ChipInterface> mChipMap = Collections.synchronizedMap(
+            new HashMap<View, ChipInterface>());
 
     // ChipListener to track chips life cycle
     private ChipListener mChipListener;
@@ -107,6 +109,21 @@ public class AstroFlowLayout extends FlowLayout {
         // This is important as user can drop outside the view, so it is important that our view
         // listens to DragEvents
         setOnDragListener(mAstroDragListener);
+    }
+
+    /**
+     * Keysets can experience concurrent modification exceptions so if we want to interate over
+     * keys, we need to synchronize the code or we can just make a copy of the collection into one
+     * that will not change
+     * @param map
+     * @return
+     */
+    private Set<View> safeGetKeySet(@NonNull Map<View, ChipInterface> map) {
+        Set<View> returnSet = new HashSet<>();
+        synchronized (map) {
+            returnSet.addAll(map.keySet());
+        }
+        return returnSet;
     }
 
     /**
@@ -249,7 +266,7 @@ public class AstroFlowLayout extends FlowLayout {
      */
     public void removeChipById(Object id) {
         View viewToDelete = null;
-        Set<View> keys = mChipMap.keySet();
+        Set<View> keys = safeGetKeySet(mChipMap);
         // Go over all the views, get the associated ChipInterface and
         // see if IDs match to determine if we should return that view.
         for (View key : keys) {
@@ -556,13 +573,13 @@ public class AstroFlowLayout extends FlowLayout {
      * @return
      */
     public List<ChipInterface> getObjects() {
-        Set<View> keys = mChipMap.keySet();
-        List<ChipInterface> chips = new ArrayList<>();
+        List<ChipInterface> returnChips = new ArrayList<>();
+        Set<View> keys = safeGetKeySet(mChipMap);
         for (View key : keys) {
             if (mChipMap.get(key) == null) continue;
-            chips.add(mChipMap.get(key));
+            returnChips.add(mChipMap.get(key));
         }
-        return chips;
+        return returnChips;
     }
 
     /**
