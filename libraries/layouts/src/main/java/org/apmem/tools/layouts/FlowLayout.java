@@ -4,24 +4,17 @@
 
 package org.apmem.tools.layouts;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Build;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.ActionMode;
-import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -180,6 +173,22 @@ public abstract class FlowLayout extends ViewGroup {
         //mListAdapter = adapter;
         mAutoCompleteTextView.setAdapter(adapter);
         mAutoCompleteTextView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+    }
+
+    /**
+     * Astro needs to be able to disable this view.  The assumption is that, when disabled
+     * it will not be enabled again.
+     * @param enabled
+     */
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        mAutoCompleteTextView.setEnabled(enabled);
+        if (!enabled) {
+            // To be safe, remove various listeners
+            mAutoCompleteTextView.setOnFocusChangeListener(null);
+            mAutoCompleteTextView.removeTextChangedListener(mTextWatcher);
+        }
     }
 
     /**

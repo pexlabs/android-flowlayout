@@ -426,6 +426,11 @@ public class AstroFlowLayout extends FlowLayout {
 
         @Override
         public void onClick(final View v) {
+            if (!isEnabled()) {
+                // Do nothing if this view is disabled
+                return;
+            }
+
             // if a chip in a view is long clicked, but the parent is collapsed
             // simply expand it
             if (mIsCollapsed) {

@@ -126,6 +126,15 @@ public class ScrollViewActivity extends Activity {
                 }
             }
         });
+
+        findViewById(R.id.disable_views).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toView.setEnabled(false);
+                ccView.setEnabled(false);
+                bccView.setEnabled(false);
+            }
+        });
     }
 
     /**
