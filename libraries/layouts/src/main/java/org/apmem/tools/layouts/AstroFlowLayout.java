@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.apmem.tools.layouts.logic.LineDefinition;
@@ -360,7 +361,7 @@ public class AstroFlowLayout extends FlowLayout {
         super.addView(view, position);
         // attach click listener again. Because this method is called from {@link AstroDragListener}
         // meaning, the view was removed & called again. So we need to attach click listener again
-        view.setOnClickListener(new ChipClickListener());
+        ((ChipView)view).setOnChipClicked(new ChipClickListener());
         mChipMap.put(view, chipInterface);
         if (mChipListener != null) {
             mChipListener.onChipAdded(chipInterface);
@@ -393,7 +394,7 @@ public class AstroFlowLayout extends FlowLayout {
         int padding = (int) getResources().getDimension(R.dimen.chip_view_text_padding);
         chipView.setPadding(padding, padding, padding, padding);
         chipView.setHasAvatarIcon(false);
-        chipView.setOnClickListener(new ChipClickListener());
+        chipView.setOnChipClicked(new ChipClickListener());
         chipView.setOnDragListener(mAstroDragListener);
         chipView.setLongClickable(true);
         chipView.setOnDeleteClicked(new OnClickListener() {
@@ -409,7 +410,7 @@ public class AstroFlowLayout extends FlowLayout {
         });
         chipView.setAutoCompleted(isAutoCompleted);
         // set long click listener for drag & drop functionality
-        chipView.setOnLongClickListener(new OnLongClickListener() {
+        chipView.setOnChipLongClicked(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 // if a chip in a view is long clicked, but the parent is collapsed
@@ -418,6 +419,10 @@ public class AstroFlowLayout extends FlowLayout {
                     forceExpand();
                     hideSoftKeyboard();
                     return true;
+                }
+                // Make sure we are dealing with ChipView
+                while (!(view instanceof ChipView)) {
+                    view = (View) view.getParent();
                 }
                 ClipData data = ClipData.newPlainText(String.valueOf(view.getId()), "");
                 View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
@@ -442,7 +447,7 @@ public class AstroFlowLayout extends FlowLayout {
     private class ChipClickListener implements View.OnClickListener {
 
         @Override
-        public void onClick(final View v) {
+        public void onClick(View v) {
             if (!isEnabled()) {
                 // Do nothing if this view is disabled
                 return;
@@ -452,13 +457,19 @@ public class AstroFlowLayout extends FlowLayout {
             // simply expand it
             if (mIsCollapsed) {
                 forceExpand();
-                return;
             }
 
+            // Make sure we are dealing with ChipView
+            while (!(v instanceof ChipView)) {
+                v = (View) v.getParent();
+            }
             ChipInterface chip = mChipMap.get(v);
+            if (chip == null) {
+                return;
+            }
             if (((ChipView)v).isAutoCompleted()) {
                 // Show detailed view as a dialog
-                final DetailedChipView detailedChipView = getDetailedChipView(mChipMap.get(v));
+                final DetailedChipView detailedChipView = getDetailedChipView(chip);
                 new ChipsDetailsDialog(v, detailedChipView).show();
             } else {
                 int position = ViewUtil.getViewPositionInParent(AstroFlowLayout.this, v);

@@ -69,6 +69,8 @@ public class ChipView extends RelativeLayout {
     // Flag to tell if the chip was populated by typing or by autocomplete
     private boolean mIsAutoCompleted;
 
+    private OnLongClickListener mOnLongClickListener;
+
     public enum TextStyle {
         STRIKE_THROUGH,
         UNDERLINE
@@ -99,6 +101,15 @@ public class ChipView extends RelativeLayout {
         View rootView = inflate(getContext(), R.layout.chip_view, this);
 
         mContentLayout = (LinearLayout) rootView.findViewById(R.id.content);
+        mContentLayout.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mOnLongClickListener != null) {
+                    mOnLongClickListener.onLongClick(v);
+                }
+                return true;
+            }
+        });
         mAvatarIconImageView = (ChipAvatarImageView) rootView.findViewById(R.id.icon);
         mLabelTextView = (TextView) rootView.findViewById(R.id.label);
         mLabelTextView.setSingleLine();
@@ -494,6 +505,10 @@ public class ChipView extends RelativeLayout {
      */
     public void setOnChipClicked(OnClickListener onClickListener) {
         mContentLayout.setOnClickListener(onClickListener);
+    }
+
+    public void setOnChipLongClicked(OnLongClickListener longClicked) {
+        mOnLongClickListener = longClicked;
     }
 
     /**
