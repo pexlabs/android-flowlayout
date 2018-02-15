@@ -19,7 +19,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -27,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.apmem.tools.layouts.logic.LineDefinition;
@@ -95,14 +93,13 @@ public class AstroFlowLayout extends FlowLayout {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!TextUtils.isEmpty(mAutoCompleteTextView.getText().toString().trim())) {
+                if (mAutoCompleteTextView.hasFocus()) {
                     showSoftKeyboard();
                     return;
                 }
                 if (isCollapsed()) {
                     expand();
                 }
-                mAutoCompleteTextView.setText(" ");
                 showSoftKeyboard();
                 mAutoCompleteTextView.requestFocus();
             }
@@ -212,7 +209,6 @@ public class AstroFlowLayout extends FlowLayout {
 
         // Add over beloved Auto complete text view.
         addAutoCompleteView();
-        mAutoCompleteTextView.setText(" ");
 
         // clear the added hidden views
         mHiddenViews.clear();
@@ -689,7 +685,9 @@ public class AstroFlowLayout extends FlowLayout {
     }
 
     public void clearAutoCompleteFocus() {
-        mAutoCompleteTextView.clearFocus();
+        if (mAutoCompleteTextView.hasFocus()) {
+            mAutoCompleteTextView.clearFocus();
+        }
     }
 
     @Override
@@ -718,7 +716,9 @@ public class AstroFlowLayout extends FlowLayout {
         // If layout is collapsed then try to request the focus
         if (!isCollapsed()) {
             mAutoCompleteTextView.setVisibility(VISIBLE);
-            mAutoCompleteTextView.requestFocus();
+            if (!mAutoCompleteTextView.hasFocus()) {
+                mAutoCompleteTextView.requestFocus();
+            }
         }
     }
 }
