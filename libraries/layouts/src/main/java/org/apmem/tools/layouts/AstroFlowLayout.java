@@ -94,13 +94,13 @@ public class AstroFlowLayout extends FlowLayout {
             @Override
             public void onClick(View v) {
                 if (mAutoCompleteTextView.hasFocus()) {
-                    showSoftKeyboard();
+                    ViewUtil.showSoftKeyboard(mAutoCompleteTextView);
                     return;
                 }
                 if (isCollapsed()) {
                     expand();
                 }
-                showSoftKeyboard();
+                ViewUtil.showSoftKeyboard(mAutoCompleteTextView);
                 mAutoCompleteTextView.requestFocus();
             }
         });
@@ -413,7 +413,7 @@ public class AstroFlowLayout extends FlowLayout {
                 // simply expand it
                 if (isCollapsed()) {
                     forceExpand();
-                    hideSoftKeyboard();
+                    ViewUtil.hideSoftKeyboard(mAutoCompleteTextView);
                     return true;
                 }
                 // Make sure we are dealing with ChipView

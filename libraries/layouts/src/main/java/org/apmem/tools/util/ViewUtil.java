@@ -15,7 +15,16 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AutoCompleteTextView;
 import android.widget.MultiAutoCompleteTextView;
+
+import org.apmem.tools.layouts.FlowLayout;
+import org.apmem.tools.views.ChipView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class ViewUtil {
 
@@ -135,5 +144,68 @@ public class ViewUtil {
             return -1;
         }
         return position;
+    }
+
+    /**
+     * Parses the text and generates chips view
+     * @param text
+     * @param parent
+     * @return
+     */
+    public static List<ChipView> generateChipsFromText(final String text, final FlowLayout parent) {
+        final List<ChipView> chipViews = new ArrayList<>();
+
+        StringTokenizer tokenizer = new StringTokenizer(text, ",");
+        while (tokenizer.hasMoreTokens()) {
+            String token = tokenizer.nextToken().trim();
+            if (!Utils.isValidEmailAddress(token)) {
+                continue;
+            }
+            ChipView chipView = (ChipView) parent.getObjectView(token, false);
+            chipViews.add(chipView);
+        }
+        return chipViews;
+    }
+
+    public static String getInvalidEmailIdFromText(final String text) {
+        StringBuilder builder = new StringBuilder();
+
+        StringTokenizer tokenizer = new StringTokenizer(text, ",");
+        while (tokenizer.hasMoreTokens()) {
+            String token = tokenizer.nextToken().trim();
+            if (!Utils.isValidEmailAddress(token)) {
+                builder.append(token);
+                builder.append(" ");
+            }
+        }
+        return builder.toString();
+    }
+
+    public static void showSoftKeyboard(final View view) {
+        final InputMethodManager inputMethodManager =
+                (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManager == null) {
+            return;
+        }
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                inputMethodManager.showSoftInput(view, 0);
+            }
+        }, 100);
+    }
+
+    public static void hideSoftKeyboard(final View view) {
+        final InputMethodManager inputMethodManager =
+                (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManager == null) {
+            return;
+        }
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }, 100);
     }
 }

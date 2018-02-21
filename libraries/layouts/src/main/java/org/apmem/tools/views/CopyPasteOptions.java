@@ -17,18 +17,23 @@ import android.view.WindowManager;
 import android.widget.MultiAutoCompleteTextView;
 
 import org.apmem.tools.layouts.FlowLayout;
+import org.apmem.tools.util.ViewUtil;
+
+import java.util.List;
 
 public class CopyPasteOptions extends Dialog {
 
     private MultiAutoCompleteTextView mAutoCompleteTextView;
+    private FlowLayout mParent;
 
     /**
      * Constructor for ChipsDetailsDialog which is also known as ChipDetailsView
      * This dialog is aligned w.r.t. clicked token considering x & y coordinates
      */
-    public CopyPasteOptions(Context context, MultiAutoCompleteTextView textView) {
-        super(context);
+    public CopyPasteOptions(FlowLayout flowLayout, MultiAutoCompleteTextView textView) {
+        super(flowLayout.getContext());
         mAutoCompleteTextView = textView;
+        mParent = flowLayout;
     }
 
     @Override
@@ -92,8 +97,23 @@ public class CopyPasteOptions extends Dialog {
                     // clip can be null when there is nothing in the clipboard
                     if (clip != null) {
                         String text = clip.getItemAt(0).getText().toString();
-                        mAutoCompleteTextView.setText(text);
-                        mAutoCompleteTextView.setSelection(mAutoCompleteTextView.getText().length());
+
+                        // From pasted string check if there are any valid email addresses
+                        // If we find any valid email addresses then we will just add them as Chip
+                        List<ChipView> views = ViewUtil.generateChipsFromText(text, mParent);
+                        int index = mParent.getChildCount() - 1;
+                        for (ChipView chipView : views) {
+                            mParent.addChipAt(chipView, index);
+                            index++;
+                        }
+
+                        // If there are any invalid addresses then we will add them as plain text
+                        // give another chance to user to edit them
+                        String invalidIds = ViewUtil.getInvalidEmailIdFromText(text);
+                        if (!TextUtils.isEmpty(invalidIds)) {
+                            mAutoCompleteTextView.setText(invalidIds);
+                        }
+                        ViewUtil.showSoftKeyboard(mAutoCompleteTextView);
                     } else {
                         if (mAutoCompleteTextView.getText().length() > 0) {
                             copyPasteView.showSelectAll();

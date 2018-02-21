@@ -494,7 +494,7 @@ public abstract class FlowLayout extends ViewGroup {
         OnLongClickListener longClickListener = new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                new CopyPasteOptions(v.getContext(), mAutoCompleteTextView).show();
+                new CopyPasteOptions(FlowLayout.this, mAutoCompleteTextView).show();
                 return true;
             }
         };
@@ -891,33 +891,5 @@ public abstract class FlowLayout extends ViewGroup {
 
     public List<LineDefinition> getLines() {
         return mLines;
-    }
-
-    protected void showSoftKeyboard() {
-        final InputMethodManager inputMethodManager =
-                (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager == null) {
-            return;
-        }
-        mAutoCompleteTextView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                inputMethodManager.showSoftInput(mAutoCompleteTextView, 0);
-            }
-        }, 100);
-    }
-
-    protected void hideSoftKeyboard() {
-        final InputMethodManager inputMethodManager =
-                (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager == null) {
-            return;
-        }
-        mAutoCompleteTextView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                inputMethodManager.hideSoftInputFromWindow(mAutoCompleteTextView.getWindowToken(), 0);
-            }
-        }, 100);
     }
 }
