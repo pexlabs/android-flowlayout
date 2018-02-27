@@ -434,6 +434,7 @@ public class AstroFlowLayout extends FlowLayout {
         chipView.setMaxWidth(mMaxWidth - MARGIN);
         // Update cache
         mChipMap.put(chipView, chipInterface);
+        mIsClicked = false;
         return chipView;
     }
 
@@ -472,6 +473,7 @@ public class AstroFlowLayout extends FlowLayout {
                 if (getChildCount() > 0 && position < getChildCount()) {
                     removeChipAt(position);
                 }
+                mIsClicked = true;
                 mAutoCompleteTextView.setText(chip.getInfo());
             }
         }

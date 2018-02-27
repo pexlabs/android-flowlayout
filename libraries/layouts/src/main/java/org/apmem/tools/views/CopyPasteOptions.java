@@ -95,7 +95,8 @@ public class CopyPasteOptions extends Dialog {
                 if (clipboard != null) {
                     ClipData clip = clipboard.getPrimaryClip();
                     // clip can be null when there is nothing in the clipboard
-                    if (clip != null) {
+                    if (clip != null && clip.getItemAt(0).getText() != null) {
+                        mParent.setClicked(true);
                         String text = clip.getItemAt(0).getText().toString();
 
                         // From pasted string check if there are any valid email addresses

@@ -13,6 +13,7 @@ import org.apmem.tools.layouts.AstroFlowLayout;
 import org.apmem.tools.listeners.ChipListener;
 import org.apmem.tools.model.Chip;
 import org.apmem.tools.model.ChipInterface;
+import org.apmem.tools.util.Utils;
 import org.apmem.tools.views.ChipView;
 
 import java.util.List;
@@ -147,19 +148,25 @@ public class ScrollViewActivity extends Activity {
         Log.d(LOG_TAG, "####### TO DATA : ");
         for(ChipInterface chipInterface : to.getObjects()) {
             if(chipInterface == null) continue;
-            Log.d(LOG_TAG, chipInterface.getLabel());
+            if (Utils.isValidEmailAddress(chipInterface.getLabel())) {
+                Log.d(LOG_TAG, chipInterface.getLabel());
+            }
         }
 
         Log.d(LOG_TAG, "####### CC DATA : ");
         for(ChipInterface chipInterface : cc.getObjects()) {
             if(chipInterface == null) continue;
-            Log.d(LOG_TAG, chipInterface.getLabel());
+            if (Utils.isValidEmailAddress(chipInterface.getLabel())) {
+                Log.d(LOG_TAG, chipInterface.getLabel());
+            }
         }
 
         Log.d(LOG_TAG, "####### BCC DATA : ");
         for(ChipInterface chipInterface : bcc.getObjects()) {
             if(chipInterface == null) continue;
-            Log.d(LOG_TAG, chipInterface.getLabel());
+            if (Utils.isValidEmailAddress(chipInterface.getLabel())) {
+                Log.d(LOG_TAG, chipInterface.getLabel());
+            }
         }
     }
 }

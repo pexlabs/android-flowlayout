@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Filterable;
@@ -64,6 +63,8 @@ public abstract class FlowLayout extends ViewGroup {
 
     // hint of AutoCompleteTextView
     protected String mHintText = "";
+
+    protected boolean mIsClicked = false;
 
     protected int mMaxWidth = 0;
 
@@ -316,6 +317,9 @@ public abstract class FlowLayout extends ViewGroup {
         // Create a new Instance
         mAutoCompleteTextView = new MultiAutoCompleteTextView(getContext());
         mAutoCompleteTextView.setTextColor(mTextColor);
+        mAutoCompleteTextView.setInputType(InputType.TYPE_CLASS_TEXT |
+                InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
+                InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         // Set min width to 20px. Resizing will not happen if we set with of
         // MultiAutoCompleteTextView to MATCH_PARENT. Also, we want MultiAutoCompleteTextView to be
         // the last member in the layout. So what we just set minimum width of MultiAutoCompleteTextView
@@ -429,17 +433,20 @@ public abstract class FlowLayout extends ViewGroup {
                         mTextWatcher.onTextChanged(s, start, before, count);
                     }
                 }
-
-                // TODO.. Commenting below code for now.
-                /*if (s.length() >= 2 && s.charAt(s.length() - 1) == ' ' && s.charAt(s.length() - 2) != ' ') {
-                    // add only if it is valid email address
-                    if (Utils.isValidEmailAddress(s.toString().trim())) {
-                        mAutoCompleteTextView.setText("");
-                        View chipView = getObjectView(s.toString().trim());
-                        int chipPosition = getChildCount() - 1;
-                        addChipAt(chipView, chipPosition);
+                if (mIsClicked) {
+                    if (!(s.length() >= 2 && s.charAt(s.length() - 1) == ' ')) {
+                        return;
                     }
-                }*/
+                } else if (!(s.length() >= 2 && s.charAt(s.length() - 1) == ' ' &&
+                            s.charAt(s.length() - 2) == ' ')) {
+                        return;
+                }
+                if (Utils.isValidEmailAddress(s.toString().trim())) {
+                    mAutoCompleteTextView.setText(" ");
+                    View chipView = getObjectView(s.toString().trim(), false);
+                    int chipPosition = getChildCount() - 1;
+                    addChipAt(chipView, chipPosition);
+                }
             }
 
             @Override
@@ -521,6 +528,10 @@ public abstract class FlowLayout extends ViewGroup {
         mAutoCompleteTextView.setOnLongClickListener(longClickListener);
         mAutoCompleteTextView.setClickable(false);
         setOnLongClickListener(longClickListener);
+    }
+
+    public void setClicked(boolean value) {
+        mIsClicked = value;
     }
 
     public abstract void collapse();
