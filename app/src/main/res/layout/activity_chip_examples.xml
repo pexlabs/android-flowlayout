@@ -47,6 +47,33 @@
                 app:deletable="true"
                 app:deleteIconColor="@android:color/white" />
 
+            <org.apmem.tools.views.ChipView
+                android:id="@+id/composer_follow_up_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:theme="@style/AppTheme.ToolbarStyle.ComposePill"
+                android:layout_centerInParent="true"
+                app:hasAvatarIcon="true"
+                app:avatarIcon="@drawable/inline_reminder"
+                app:label="2d"
+                app:avatarWidth="20dp"
+                app:avatarHeight="20dp"
+                app:avatarAtEnd="true"
+                app:clickable="false"/>
+
+            <org.apmem.tools.views.ChipView
+                    android:id="@+id/composer_schedule_send_menu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:theme="@style/AppTheme.ToolbarStyle.ComposePill"
+                    android:layout_centerInParent="true"
+                    app:hasAvatarIcon="true"
+                    app:avatarIcon="@drawable/inline_category_auto_snooze"
+                    app:label="Jun 13, 2018"
+                    app:avatarWidth="20dp"
+                    app:avatarHeight="20dp"
+                    app:avatarAtEnd="true"
+                    app:clickable="false"/>
 
         </LinearLayout>
 

@@ -1,0 +1,25 @@
+<resources>
+    <!-- The style for our toolbar -->
+    <style name="AppTheme.ToolbarStyle" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- color of text and icons in the toolbar and overflow menu-->
+        <item name="android:textColorPrimary">@color/astroBlack600</item>
+        <item name="colorControlNormal">@color/astroBlack600</item>
+        <item name="colorControlActivated">@color/astroBlack600</item>
+        <item name="android:actionBarItemBackground">?android:attr/selectableItemBackground</item>
+        <item name="android:actionModeBackground">@color/astroBlack</item>
+        <item name="android:textColor">@color/astroBlack600</item>
+   </style>
+
+    <style name="AppTheme.ToolbarStyle.ComposePill">
+        <!-- There are custom styles using in our fork of com.pchmn.materialchips.ChipView -->
+        <item name="backgroundColor">@color/white</item>
+        <item name="borderColor">@color/astroBlack600</item>
+        <item name="borderSize">1dp</item>
+        <item name="labelColor">@color/astroBlack600</item>
+        <item name="labelTextSize">14sp</item>
+        <item name="textAvatarSpacing">3dp</item>
+        <item name="android:paddingLeft">3dp</item>
+        <item name="android:paddingRight">3dp</item>
+    </style>
+
+</resources>

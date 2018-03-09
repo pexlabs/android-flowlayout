@@ -249,12 +249,21 @@ public class ChipView extends RelativeLayout {
             mLabelTextView.setEnabled(mClickable);
         }
 
+        boolean refresh = false;
         if (mAvatarHeight >= 0) {
             mAvatarIconImageView.getLayoutParams().height = mAvatarHeight;
+            refresh = true;
         }
 
         if (mAvatarWidth >= 0) {
             mAvatarIconImageView.getLayoutParams().width = mAvatarWidth;
+            refresh = true;
+        }
+
+        if (refresh) {
+            mAvatarIconImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            mAvatarIconImageView.setAdjustViewBounds(true);
+            requestLayout();
         }
     }
 

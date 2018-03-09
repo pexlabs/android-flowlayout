@@ -15,8 +15,8 @@
         <!-- label -->
         <TextView
             android:id="@+id/label"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:textColor="@color/astroBlack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,9 +29,12 @@
             android:layout_height="32dp"
             android:src="@drawable/avatar"
             android:layout_gravity="center_vertical"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:layout_marginRight="8dp"/>
 
-        <!-- remove button -->
+        <!-- remove button does not co-exist with avatar -->
         <ImageView
             android:id="@+id/delete_button"
             android:visibility="gone"
