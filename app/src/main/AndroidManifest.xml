@@ -31,6 +31,9 @@
         <activity android:name="org.apmem.tools.example.ui.ScrollViewActivity"
                   android:label="@string/scrollview_example"/>
 
+        <activity
+            android:name=".ui.ChipExamplesActivity"
+            android:label="@string/chips_example"/>
     </application>
 </manifest>
 

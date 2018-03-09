@@ -21,6 +21,12 @@
         android:text="@string/scrollview_example"/>
 
     <Button
+        android:id="@+id/chips_example"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/chips_example"/>
+
+    <Button
         android:id="@+id/normal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

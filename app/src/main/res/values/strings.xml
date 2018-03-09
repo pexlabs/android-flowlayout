@@ -5,6 +5,7 @@
     <string name="flow_layout_manager_activity">manager</string>
     <string name="recyclerview_example">RecyclerView Example</string>
     <string name="scrollview_example">ScrollView Example</string>
+    <string name="chips_example">ChipsView Example</string>
 
     <string name="button_test">test</string>
     <string name="button_horizontalMargin">horizontal</string>

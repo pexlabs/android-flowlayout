@@ -12,15 +12,6 @@
         android:layout_height="32dp"
         android:background="@drawable/bg_chip_view">
 
-        <!-- avatar -->
-        <org.apmem.tools.views.ChipAvatarImageView
-            android:id="@+id/icon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/avatar"
-            android:layout_gravity="center_vertical"
-            android:visibility="gone"/>
-
         <!-- label -->
         <TextView
             android:id="@+id/label"
@@ -30,6 +21,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"/>
+
+        <!-- avatar -->
+        <org.apmem.tools.views.ChipAvatarImageView
+            android:id="@+id/icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/avatar"
+            android:layout_gravity="center_vertical"
+            android:visibility="gone"/>
 
         <!-- remove button -->
         <ImageView

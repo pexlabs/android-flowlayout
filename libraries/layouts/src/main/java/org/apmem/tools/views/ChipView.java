@@ -69,6 +69,11 @@ public class ChipView extends RelativeLayout {
     // Flag to tell if the chip was populated by typing or by autocomplete
     private boolean mIsAutoCompleted;
 
+    private boolean mAvatarAtEnd = false;
+    private int mAvatarWidth;
+    private int mAvatarHeight;
+    private boolean mClickable;
+
     private OnLongClickListener mOnLongClickListener;
 
     public enum TextStyle {
@@ -97,23 +102,6 @@ public class ChipView extends RelativeLayout {
         setClickable(true);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        // inflate layout
-        View rootView = inflate(getContext(), R.layout.chip_view, this);
-
-        mContentLayout = (LinearLayout) rootView.findViewById(R.id.content);
-        mContentLayout.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (mOnLongClickListener != null) {
-                    mOnLongClickListener.onLongClick(v);
-                }
-                return true;
-            }
-        });
-        mAvatarIconImageView = (ChipAvatarImageView) rootView.findViewById(R.id.icon);
-        mLabelTextView = (TextView) rootView.findViewById(R.id.label);
-        mLabelTextView.setSingleLine();
-        mDeleteButton = (ImageView) rootView.findViewById(R.id.delete_button);
 
         // letter tile provider
         mLetterTileProvider = new LetterTileProvider(mContext);
@@ -124,7 +112,6 @@ public class ChipView extends RelativeLayout {
                     attrs,
                     R.styleable.ChipView,
                     0, 0);
-
             try {
                 // label
                 mLabel = a.getString(R.styleable.ChipView_label);
@@ -136,15 +123,17 @@ public class ChipView extends RelativeLayout {
                 // avatar icon
                 mHasAvatarIcon = a.getBoolean(R.styleable.ChipView_hasAvatarIcon, false);
                 int avatarIconId = a.getResourceId(R.styleable.ChipView_avatarIcon, NONE);
-                if(avatarIconId != NONE) mAvatarIconDrawable = ContextCompat.getDrawable(mContext,
-                        avatarIconId);
-                if(mAvatarIconDrawable != null) mHasAvatarIcon = true;
+                if (avatarIconId != NONE) {
+                    mAvatarIconDrawable = ContextCompat.getDrawable(mContext,avatarIconId);
+                }
+                if (mAvatarIconDrawable != null) mHasAvatarIcon = true;
                 // delete icon
                 mDeletable = a.getBoolean(R.styleable.ChipView_deletable, false);
                 mDeleteIconColor = a.getColorStateList(R.styleable.ChipView_deleteIconColor);
                 int deleteIconId = a.getResourceId(R.styleable.ChipView_deleteIcon, NONE);
-                if(deleteIconId != NONE) mDeleteIcon = ContextCompat.getDrawable(mContext,
-                        deleteIconId);
+                if (deleteIconId != NONE) {
+                    mDeleteIcon = ContextCompat.getDrawable(mContext, deleteIconId);
+                }
                 // background color
                 mBackgroundColor = a.getColorStateList(R.styleable.ChipView_backgroundColor);
                 // border color
@@ -152,15 +141,43 @@ public class ChipView extends RelativeLayout {
                 // border size
                 mBorderSize = a.getDimensionPixelSize(R.styleable.ChipView_borderSize,
                         ViewUtil.dpToPx(2));
-
                 // Space between the text and the avatar
                 mTextAvatarSpacing = a.getDimensionPixelSize(R.styleable.ChipView_textAvatarSpacing,
                         getResources().getDimensionPixelSize(R.dimen.text_avatar_spacing_default));
+                mAvatarAtEnd = a.getBoolean(R.styleable.ChipView_avatarAtEnd, false);
+                mAvatarWidth = a.getDimensionPixelSize(R.styleable.ChipView_avatarWidth, -1);
+                mAvatarHeight = a.getDimensionPixelSize(R.styleable.ChipView_avatarHeight, -1);
+                mClickable = a.getBoolean(R.styleable.ChipView_clickable, true);
             }
             finally {
                 a.recycle();
             }
         }
+
+        // inflate layout
+        View rootView;
+
+        if (mAvatarAtEnd) {
+            rootView = inflate(getContext(), R.layout.chip_view_avatar_at_end, this);
+        } else {
+            rootView = inflate(getContext(), R.layout.chip_view, this);
+        }
+
+        mContentLayout = (LinearLayout) rootView.findViewById(R.id.content);
+        mContentLayout.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mOnLongClickListener != null) {
+                    mOnLongClickListener.onLongClick(v);
+                }
+                return true;
+            }
+        });
+
+        mAvatarIconImageView = (ChipAvatarImageView) rootView.findViewById(R.id.icon);
+        mLabelTextView = (TextView) rootView.findViewById(R.id.label);
+        mLabelTextView.setSingleLine();
+        mDeleteButton = (ImageView) rootView.findViewById(R.id.delete_button);
 
         // inflate
         inflateWithAttributes();
@@ -201,22 +218,44 @@ public class ChipView extends RelativeLayout {
         // avatar
         setHasAvatarIcon(mHasAvatarIcon);
 
+        if (mHasAvatarIcon && mAvatarAtEnd) {
+            // Don't want conflicting images at the end
+            mDeletable = false;
+        }
+
         // delete button
         setDeletable(mDeletable);
 
         // label
         setLabel(mLabel, mLabelAvatarPaddingExtra, mLabelTextSize, mTextAvatarSpacing);
-        if(mLabelColor != null)
+        if (mLabelColor != null) {
             setLabelColor(mLabelColor);
-
+        }
 
         // background color
-        if(mBackgroundColor != null)
+        if (mBackgroundColor != null) {
             setChipBackgroundColor(mBackgroundColor);
+        }
 
         // border color
-        if(mBorderColor != null)
+        if (mBorderColor != null) {
             setChipBorderColor(mBorderSize, mBorderColor);
+        }
+
+        if (!mClickable) {
+            // Only disable or else leave default
+            mContentLayout.setEnabled(mClickable);
+            mAvatarIconImageView.setEnabled(mClickable);
+            mLabelTextView.setEnabled(mClickable);
+        }
+
+        if (mAvatarHeight >= 0) {
+            mAvatarIconImageView.getLayoutParams().height = mAvatarHeight;
+        }
+
+        if (mAvatarWidth >= 0) {
+            mAvatarIconImageView.getLayoutParams().width = mAvatarWidth;
+        }
     }
 
     public void inflate(ChipInterface chip) {
@@ -252,13 +291,21 @@ public class ChipView extends RelativeLayout {
         if (labelTextSizePixels > 0) {
             mLabelTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, labelTextSizePixels);
         }
+
         if (mHasAvatarIcon) {
             LinearLayout.LayoutParams layoutParams =
                     (LinearLayout.LayoutParams) mLabelTextView.getLayoutParams();
-            layoutParams.leftMargin = labelAvatarSpacing;
-            mLabelTextView.setLayoutParams(layoutParams);
-            mLabelTextView.setPadding(labelAvatarPaddingExtra, mLabelTextView.getPaddingTop(),
+            if (!mAvatarAtEnd) {
+                layoutParams.leftMargin = labelAvatarSpacing;
+                mLabelTextView.setLayoutParams(layoutParams);
+                mLabelTextView.setPadding(labelAvatarPaddingExtra, mLabelTextView.getPaddingTop(),
                     mLabelTextView.getPaddingRight(), mLabelTextView.getPaddingBottom());
+            } else {
+                layoutParams.rightMargin = labelAvatarSpacing;
+                mLabelTextView.setLayoutParams(layoutParams);
+                mLabelTextView.setPadding(mLabelTextView.getPaddingLeft(), mLabelTextView.getPaddingTop(),
+                    labelAvatarPaddingExtra, mLabelTextView.getPaddingBottom());
+            }
         }
     }
 

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/layout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- some test chips -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <org.apmem.tools.views.ChipView
+                android:id="@+id/chip1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:label="Chip 1"
+                app:labelAvatarPaddingExtra="8dp"
+                app:labelColor="@android:color/white"
+                app:avatarIcon="@drawable/avatar"
+                app:backgroundColor="@android:color/holo_green_dark"
+                app:deletable="true"
+                app:deleteIconColor="@android:color/white" />
+
+            <org.apmem.tools.views.ChipView
+                android:id="@+id/chip2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:label="Chip 2"
+                app:avatarAtEnd="true"
+                app:labelAvatarPaddingExtra="8dp"
+                app:labelColor="@android:color/white"
+                app:avatarIcon="@drawable/avatar"
+                app:avatarHeight="10dp"
+                app:avatarWidth="10dp"
+                app:clickable="false"
+                app:backgroundColor="@android:color/holo_green_dark"
+                app:deletable="true"
+                app:deleteIconColor="@android:color/white" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
