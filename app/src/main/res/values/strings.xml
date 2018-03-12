@@ -20,4 +20,5 @@
     <string name="change_style">Change Style</string>
     <string name="change_color">Change Color</string>
     <string name="disable_views">Disable Views</string>
+    <string name="calculate_text">Calculate text</string>
 </resources>

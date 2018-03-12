@@ -19,6 +19,12 @@
         <attr name="chip_detailed_textColor" format="color" />
         <attr name="chip_detailed_backgroundColor" format="color" />
         <attr name="chip_detailed_deleteIconColor" format="color" />
+        <attr name="collapsible" format="boolean" />
+        <attr name="add_more_image" format="reference" />
+        <attr name="add_more_image_marginLeft" format="dimension" />
+        <attr name="add_more_image_marginRight" format="dimension" />
+        <attr name="add_more_image_marginTop" format="dimension" />
+        <attr name="add_more_image_marginBottom" format="dimension" />
     </declare-styleable>
     <declare-styleable name="FlowLayout_LayoutParams">
         <attr name="layout_newLine" format="boolean"/>

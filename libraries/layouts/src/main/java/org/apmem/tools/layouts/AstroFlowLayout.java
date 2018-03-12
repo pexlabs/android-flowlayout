@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.apmem.tools.layouts.logic.LineDefinition;
@@ -34,6 +35,7 @@ import org.apmem.tools.listeners.AstroDragListener;
 import org.apmem.tools.listeners.ChipListener;
 import org.apmem.tools.model.Chip;
 import org.apmem.tools.model.ChipInterface;
+import org.apmem.tools.util.Preconditions;
 import org.apmem.tools.util.ViewUtil;
 import org.apmem.tools.views.ChipView;
 import org.apmem.tools.views.DetailedChipView;
@@ -68,9 +70,6 @@ public class AstroFlowLayout extends FlowLayout {
     // ChipListener to track chips life cycle
     private ChipListener mChipListener;
 
-    // Drag listener which listens to chips life like added/removed
-    private AstroDragListener mAstroDragListener;
-
     public AstroFlowLayout(Context context) {
         this(context, null);
     }
@@ -81,7 +80,6 @@ public class AstroFlowLayout extends FlowLayout {
 
     public AstroFlowLayout(Context context, AttributeSet attributeSet, int defStyle) {
         super(context, attributeSet, defStyle);
-        mAstroDragListener = new AstroDragListener();
         // The below lines work as a hack. As we are using MultiAutoCompleteTextView it should
         // resize itself on invalidation of the layout. Now this will not happen if we set with of
         // MultiAutoCompleteTextView to MATCH_PARENT. Also, we want MultiAutoCompleteTextView to be
@@ -97,8 +95,9 @@ public class AstroFlowLayout extends FlowLayout {
                     ViewUtil.showSoftKeyboard(mAutoCompleteTextView);
                     return;
                 }
-                if (isCollapsed()) {
-                    expand();
+                if (mAutoCompleteTextView.getVisibility() == GONE ||
+                        mAutoCompleteTextView.getVisibility() == INVISIBLE) {
+                    removeAddMoreImageView();
                 }
                 ViewUtil.showSoftKeyboard(mAutoCompleteTextView);
                 mAutoCompleteTextView.requestFocus();
@@ -130,6 +129,7 @@ public class AstroFlowLayout extends FlowLayout {
      */
     @Override
     public void collapse() {
+        Preconditions.checkIfCollapseSupported(mCollapsible);
         // There is nothing to collapse
         if (getChildCount() == 0) {
             return;
@@ -172,12 +172,48 @@ public class AstroFlowLayout extends FlowLayout {
         mIsCollapsed = true;
     }
 
+    public String getCollapsedString() {
+        Preconditions.checkIfCollapseSupported(mCollapsible);
+        // There is nothing to collapse
+        if (getChildCount() == 0) {
+            return "";
+        }
+
+        // First create temp list to hold all the views of first row of the flow layout
+        List<ChipInterface> views = new ArrayList<>();
+        Set<View> hiddenViews = new HashSet<>();
+        StringBuilder builder = new StringBuilder();
+        // First all all the views to hidden views
+        for (int i = 0; i < getChildCount() - 1; i++) {
+            hiddenViews.add(getChildAt(i));
+        }
+
+        // Get the views present at first line / row
+        LineDefinition lineDefinition = getLines().get(0);
+
+        // Loop through all the views of first line. Only views of first line will be visible
+        // along with +1 i.e. count view
+        int i = 0;
+        for (ViewDefinition viewDefinition : lineDefinition.getViews()) {
+            builder.append(mChipMap.get(viewDefinition.getView()).getInfo());
+            hiddenViews.remove(viewDefinition.getView());
+        }
+
+        // So size of the hidden views is the count
+        // if we have views to hide, show them as count
+        if (hiddenViews.size() > 0) {
+            builder.append(getCountView("+" + hiddenViews.size()));
+        }
+        return builder.toString();
+    }
+
     /**
      * This helps in expanding the collapsed state
      * expand is called when clicked in CountTextView, Clicked on VisibleChips
      */
     @Override
     public void expand() {
+        Preconditions.checkIfCollapseSupported(mCollapsible);
         // If we don't have any hidden views just return
         if (mHiddenViews.size() < 1) {
             return;
@@ -190,6 +226,7 @@ public class AstroFlowLayout extends FlowLayout {
      * this is force expand, called when drag enter event is occurred
      */
     public void forceExpand() {
+        Preconditions.checkIfCollapseSupported(mCollapsible);
         // Remove the last count text view
         if (getChildCount() > 1) {
             View view = getChildAt(getChildCount() - 1);
@@ -314,6 +351,10 @@ public class AstroFlowLayout extends FlowLayout {
             setHint(mHintText);
         }
 
+        if (getChildCount() == 2) {
+            removeAddMoreImageView();
+        }
+
         // Call onChipRemoved for removed chip
         if (mChipListener != null) {
             mChipListener.onChipRemoved(removedChip);
@@ -364,6 +405,8 @@ public class AstroFlowLayout extends FlowLayout {
         }
         // This will help in showing the cursor for MultiAutoCompleteTextView
         mAutoCompleteTextView.setText(" ");
+
+        addAddMoreImageButton();
     }
 
     /**
@@ -411,7 +454,7 @@ public class AstroFlowLayout extends FlowLayout {
             public boolean onLongClick(View view) {
                 // if a chip in a view is long clicked, but the parent is collapsed
                 // simply expand it
-                if (isCollapsed()) {
+                if (mCollapsible && isCollapsed()) {
                     forceExpand();
                     ViewUtil.hideSoftKeyboard(mAutoCompleteTextView);
                     return true;
@@ -434,8 +477,17 @@ public class AstroFlowLayout extends FlowLayout {
         chipView.setMaxWidth(mMaxWidth - MARGIN);
         // Update cache
         mChipMap.put(chipView, chipInterface);
+        chipView.setEnabled(true);
         mIsClicked = false;
         return chipView;
+    }
+
+    /**
+     * Gets total number of chips
+     * @return
+     */
+    public int getChipsCount() {
+        return mChipMap.size();
     }
 
     /**
