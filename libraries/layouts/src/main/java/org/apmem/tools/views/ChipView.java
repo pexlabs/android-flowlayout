@@ -119,7 +119,7 @@ public class ChipView extends RelativeLayout {
                 mLabelAvatarPaddingExtra = a.getDimensionPixelSize(
                         R.styleable.ChipView_labelAvatarPaddingExtra, 0);
                 mLabelTextSize = a.getDimensionPixelSize(R.styleable.ChipView_labelTextSize,
-                        ViewUtil.dpToPx(16));
+                        ViewUtil.dpToPx(14));
                 // avatar icon
                 mHasAvatarIcon = a.getBoolean(R.styleable.ChipView_hasAvatarIcon, false);
                 int avatarIconId = a.getResourceId(R.styleable.ChipView_avatarIcon, NONE);
@@ -137,6 +137,7 @@ public class ChipView extends RelativeLayout {
                 // background color
                 mBackgroundColor = a.getColorStateList(R.styleable.ChipView_backgroundColor);
                 // border color
+
                 mBorderColor = a.getColorStateList(R.styleable.ChipView_borderColor);
                 // border size
                 mBorderSize = a.getDimensionPixelSize(R.styleable.ChipView_borderSize,

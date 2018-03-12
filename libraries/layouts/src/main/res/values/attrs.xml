@@ -25,6 +25,8 @@
         <attr name="add_more_image_marginRight" format="dimension" />
         <attr name="add_more_image_marginTop" format="dimension" />
         <attr name="add_more_image_marginBottom" format="dimension" />
+        <attr name="chipview_height" format="dimension" />
+        <attr name="chipview_margin" format="dimension" />
     </declare-styleable>
     <declare-styleable name="FlowLayout_LayoutParams">
         <attr name="layout_newLine" format="boolean"/>

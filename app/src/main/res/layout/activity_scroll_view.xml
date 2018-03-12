@@ -27,16 +27,24 @@
             <org.apmem.tools.layouts.AstroFlowLayout
                 android:id="@+id/to_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginRight="8dp"
                 android:orientation="horizontal"
                 app:add_more_image_marginLeft="4dp"
                 app:add_more_image_marginRight="4dp"
                 app:add_more_image="@drawable/union"
+                app:chipview_height="32dp"
+                app:chipview_margin="8dp"
                 app:collapsible="false"
                 app:layoutDirection="ltr"/>
 
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/astroBlack600"
+            />
 
         <LinearLayout
             android:layout_marginTop="10dp"
@@ -55,16 +63,23 @@
             <org.apmem.tools.layouts.AstroFlowLayout
                 android:id="@+id/cc_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginRight="8dp"
                 android:orientation="horizontal"
                 app:add_more_image_marginLeft="4dp"
                 app:add_more_image_marginRight="4dp"
                 app:add_more_image="@drawable/union"
                 app:collapsible="false"
+                app:chipview_margin="8dp"
                 app:layoutDirection="ltr"/>
 
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/astroBlack600"
+            />
 
         <LinearLayout
             android:layout_marginTop="10dp"
@@ -82,17 +97,22 @@
             <org.apmem.tools.layouts.AstroFlowLayout
                 android:id="@+id/bcc_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginRight="8dp"
                 android:orientation="horizontal"
                 app:add_more_image_marginLeft="4dp"
                 app:add_more_image_marginRight="4dp"
                 app:add_more_image="@drawable/union"
                 app:collapsible="false"
+                app:chipview_margin="8dp"
                 app:layoutDirection="ltr"/>
 
         </LinearLayout>
-
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/astroBlack600"
+            />
         <Button
             android:id="@+id/change_style"
             android:text="@string/change_style"

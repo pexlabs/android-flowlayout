@@ -92,6 +92,8 @@ public abstract class FlowLayout extends ViewGroup {
     private float mAddMoreImageViewMarginRight;
     private float mAddMoreImageViewMarginTop;
     private float mAddMoreImageViewMarginBottom;
+    protected float mChipViewHeight;
+    protected float mChipViewMargin;
 
     public FlowLayout(Context context) {
         this(context, null);
@@ -169,6 +171,9 @@ public abstract class FlowLayout extends ViewGroup {
                     R.styleable.FlowLayout_add_more_image_marginTop, 0f);
             mAddMoreImageViewMarginBottom = a.getDimension(
                     R.styleable.FlowLayout_add_more_image_marginBottom, 0f);
+
+            mChipViewHeight = a.getDimension(R.styleable.FlowLayout_chipview_height, 0f);
+            mChipViewMargin = a.getDimension(R.styleable.FlowLayout_chipview_margin, 0f);
 
         } finally {
             a.recycle();

@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -443,6 +444,13 @@ public class AstroFlowLayout extends FlowLayout {
         // Update cache
         mChipMap.put(chipView, chipInterface);
         chipView.setEnabled(true);
+        LayoutParams params = (LayoutParams) chipView.getLayoutParams();
+        if (params == null) {
+            params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+        params.leftMargin = (int) mChipViewMargin;
+        chipView.setLayoutParams(params);
         mIsClicked = false;
         return chipView;
     }
@@ -640,6 +648,11 @@ public class AstroFlowLayout extends FlowLayout {
      */
     public boolean isCollapsed() {
         return mIsCollapsed;
+    }
+
+    public void prepareForEdit() {
+        removeAddMoreImageView();
+        mAutoCompleteTextView.requestFocus();
     }
 
     /**
