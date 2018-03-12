@@ -172,41 +172,6 @@ public class AstroFlowLayout extends FlowLayout {
         mIsCollapsed = true;
     }
 
-    public String getCollapsedString() {
-        Preconditions.checkIfCollapseSupported(mCollapsible);
-        // There is nothing to collapse
-        if (getChildCount() == 0) {
-            return "";
-        }
-
-        // First create temp list to hold all the views of first row of the flow layout
-        List<ChipInterface> views = new ArrayList<>();
-        Set<View> hiddenViews = new HashSet<>();
-        StringBuilder builder = new StringBuilder();
-        // First all all the views to hidden views
-        for (int i = 0; i < getChildCount() - 1; i++) {
-            hiddenViews.add(getChildAt(i));
-        }
-
-        // Get the views present at first line / row
-        LineDefinition lineDefinition = getLines().get(0);
-
-        // Loop through all the views of first line. Only views of first line will be visible
-        // along with +1 i.e. count view
-        int i = 0;
-        for (ViewDefinition viewDefinition : lineDefinition.getViews()) {
-            builder.append(mChipMap.get(viewDefinition.getView()).getInfo());
-            hiddenViews.remove(viewDefinition.getView());
-        }
-
-        // So size of the hidden views is the count
-        // if we have views to hide, show them as count
-        if (hiddenViews.size() > 0) {
-            builder.append(getCountView("+" + hiddenViews.size()));
-        }
-        return builder.toString();
-    }
-
     /**
      * This helps in expanding the collapsed state
      * expand is called when clicked in CountTextView, Clicked on VisibleChips
