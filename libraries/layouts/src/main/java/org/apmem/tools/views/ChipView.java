@@ -267,6 +267,12 @@ public class ChipView extends RelativeLayout {
         }
     }
 
+    public void setEnabled(boolean enabled) {
+        mContentLayout.setEnabled(enabled);
+        mAvatarIconImageView.setEnabled(enabled);
+        mLabelTextView.setEnabled(enabled);
+    }
+
     public void inflate(ChipInterface chip) {
         mChip = chip;
         // label

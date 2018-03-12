@@ -8,7 +8,9 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -26,6 +28,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
@@ -61,6 +64,9 @@ public abstract class FlowLayout extends ViewGroup {
     // Our beloved AutoCompleteTextView
     protected MultiAutoCompleteTextView mAutoCompleteTextView;
 
+    // Drag listener which listens to chips life like added/removed
+    protected AstroDragListener mAstroDragListener;
+    
     // hint of AutoCompleteTextView
     protected String mHintText = "";
 
@@ -79,34 +85,38 @@ public abstract class FlowLayout extends ViewGroup {
     protected int mChipBorderColor;
     protected int mTextSize;
     protected int mTextColor;
+    protected boolean mCollapsible;
+    protected Drawable mAddMoreImageResource;
+    private ImageView mAddMoreImageView;
+    private float mAddMoreImageViewMarginLeft;
+    private float mAddMoreImageViewMarginRight;
+    private float mAddMoreImageViewMarginTop;
+    private float mAddMoreImageViewMarginBottom;
 
     public FlowLayout(Context context) {
-        super(context);
-        this.mConfig = new ConfigDefinition();
-        readStyleParameters(context, null);
+        this(context, null);
     }
 
     public FlowLayout(Context context, AttributeSet attributeSet) {
-        super(context, attributeSet);
-        this.mConfig = new ConfigDefinition();
-        readStyleParameters(context, attributeSet);
+        this(context, attributeSet, 0);
     }
 
     public FlowLayout(Context context, AttributeSet attributeSet, int defStyle) {
         super(context, attributeSet, defStyle);
-        this.mConfig = new ConfigDefinition();
+        mAstroDragListener = new AstroDragListener();
+        mConfig = new ConfigDefinition();
         readStyleParameters(context, attributeSet);
     }
 
     private void readStyleParameters(Context context, AttributeSet attributeSet) {
         TypedArray a = context.obtainStyledAttributes(attributeSet, R.styleable.FlowLayout);
         try {
-            this.mConfig.setOrientation(a.getInteger(R.styleable.FlowLayout_android_orientation,
+            mConfig.setOrientation(a.getInteger(R.styleable.FlowLayout_android_orientation,
                     CommonLogic.HORIZONTAL));
-            this.mConfig.setMaxLines(a.getInteger(R.styleable.FlowLayout_maxLines, 0));
-            this.mConfig.setDebugDraw(a.getBoolean(R.styleable.FlowLayout_debugDraw, false));
-            this.mConfig.setWeightDefault(a.getFloat(R.styleable.FlowLayout_weightDefault, 0.0f));
-            this.mConfig.setGravity(a.getInteger(R.styleable.FlowLayout_android_gravity,
+            mConfig.setMaxLines(a.getInteger(R.styleable.FlowLayout_maxLines, 0));
+            mConfig.setDebugDraw(a.getBoolean(R.styleable.FlowLayout_debugDraw, false));
+            mConfig.setWeightDefault(a.getFloat(R.styleable.FlowLayout_weightDefault, 0.0f));
+            mConfig.setGravity(a.getInteger(R.styleable.FlowLayout_android_gravity,
                     Gravity.NO_GRAVITY));
 
             int layoutDirection;
@@ -146,6 +156,19 @@ public abstract class FlowLayout extends ViewGroup {
             mShowChipDetailed = a.getBoolean(R.styleable.FlowLayout_showChipDetailed, true);
             mCountViewTextSize = a.getDimension(R.styleable.FlowLayout_count_view_size,
                     getResources().getDimension(R.dimen.count_view_label_text_size));
+            mCollapsible = a.getBoolean(R.styleable.FlowLayout_collapsible, false);
+            int iconId = a.getResourceId(R.styleable.FlowLayout_add_more_image, -1);
+            if (iconId != -1) {
+                mAddMoreImageResource = ContextCompat.getDrawable(context, iconId);
+            }
+            mAddMoreImageViewMarginRight = a.getDimension(
+                    R.styleable.FlowLayout_add_more_image_marginRight, 0f);
+            mAddMoreImageViewMarginLeft = a.getDimension(
+                    R.styleable.FlowLayout_add_more_image_marginLeft, 0f);
+            mAddMoreImageViewMarginTop = a.getDimension(
+                    R.styleable.FlowLayout_add_more_image_marginTop, 0f);
+            mAddMoreImageViewMarginBottom = a.getDimension(
+                    R.styleable.FlowLayout_add_more_image_marginBottom, 0f);
 
         } finally {
             a.recycle();
@@ -153,13 +176,52 @@ public abstract class FlowLayout extends ViewGroup {
 
         // first initialize the AutoCompleteView
         initAutoCompleteView();
-        addView(mAutoCompleteTextView);
+        mAddMoreImageView = new ImageView(context);
+        mAddMoreImageView.setImageDrawable(mAddMoreImageResource);
+        mAddMoreImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addAutoCompleteView();
+                removeAddMoreImageView();
+            }
+        });
+        addAutoCompleteView();
         setGravity(Gravity.CENTER_VERTICAL);
+    }
+
+    protected void addAddMoreImageButton() {
+        if (mAddMoreImageView.getParent() != null) {
+            removeView(mAddMoreImageView);
+        }
+        List<ChipInterface> objects = getObjects();
+        if (objects.size() == 0) {
+            return;
+        }
+        LayoutParams params = (LayoutParams) mAddMoreImageView.getLayoutParams();
+        if (params == null) {
+            params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+        params.leftMargin = (int) mAddMoreImageViewMarginLeft;
+        params.rightMargin = (int) mAddMoreImageViewMarginRight;
+        params.topMargin = (int) mAddMoreImageViewMarginTop;
+        params.bottomMargin = (int) mAddMoreImageViewMarginBottom;
+        mAddMoreImageView.setLayoutParams(params);
+        addView(mAddMoreImageView);
+        // AddMoreImageView should also listen for Dragging events
+        mAddMoreImageView.setOnDragListener(new AstroDragListener());
+        mAutoCompleteTextView.setVisibility(GONE);
+    }
+
+    protected void removeAddMoreImageView() {
+        removeView(mAddMoreImageView);
+        mAutoCompleteTextView.setVisibility(VISIBLE);
+        mAutoCompleteTextView.requestFocus();
     }
 
     public void addAutoCompleteView() {
         // If AutoCompleteTextView is already added then don't add it
-        if (mAutoCompleteTextView.getParent() != null) {
+        if (mAutoCompleteTextView != null && mAutoCompleteTextView.getParent() != null) {
             removeView(mAutoCompleteTextView);
         }
         addView(mAutoCompleteTextView);
@@ -467,6 +529,7 @@ public abstract class FlowLayout extends ViewGroup {
                     mAutoCompleteTextView.setCursorVisible(false);
                     mAutoCompleteTextView.setActivated(false);
                     mAutoCompleteTextView.setPressed(false);
+                    addAddMoreImageButton();
                     // lost the focus. check if there is a text
                     String text = mAutoCompleteTextView.getText().toString().trim();
                     if (!TextUtils.isEmpty(text)) {
@@ -476,17 +539,12 @@ public abstract class FlowLayout extends ViewGroup {
                             addChipAt(chipView, chipPosition);
                         }
                     }
-                    // If no focus then collapse
-                    if (mLines.size() > 1) {
-                        collapse();
-                    }
                 } else {
+                    removeAddMoreImageView();
                     // if focus is gained then show the cursor forcefully
                     mAutoCompleteTextView.setCursorVisible(true);
                     mAutoCompleteTextView.setActivated(true);
                     mAutoCompleteTextView.setPressed(true);
-                    // If AutoCompleteView gets the focus then expand
-                    expand();
                 }
                 if (mFocusChangeListener != null) {
                     mFocusChangeListener.onFocusChange(v, hasFocus);
@@ -570,7 +628,7 @@ public abstract class FlowLayout extends ViewGroup {
                     getChildMeasureSpec(heightMeasureSpec, this.getPaddingTop() + this.getPaddingBottom(), lp.height)
             );
 
-            ViewDefinition view = new ViewDefinition(this.mConfig, child);
+            ViewDefinition view = new ViewDefinition(mConfig, child);
             view.setWidth(child.getMeasuredWidth());
             view.setHeight(child.getMeasuredHeight());
             view.setNewLine(lp.isNewLine());
@@ -581,11 +639,11 @@ public abstract class FlowLayout extends ViewGroup {
         }
 
         mMaxWidth = MeasureSpec.getSize(widthMeasureSpec) - this.getPaddingRight() - this.getPaddingLeft();
-        this.mConfig.setMaxWidth(mMaxWidth);
-        this.mConfig.setMaxHeight(MeasureSpec.getSize(heightMeasureSpec) - this.getPaddingTop() - this.getPaddingBottom());
-        this.mConfig.setWidthMode(MeasureSpec.getMode(widthMeasureSpec));
-        this.mConfig.setHeightMode(MeasureSpec.getMode(heightMeasureSpec));
-        this.mConfig.setCheckCanFit(this.mConfig.getLengthMode() != View.MeasureSpec.UNSPECIFIED);
+        mConfig.setMaxWidth(mMaxWidth);
+        mConfig.setMaxHeight(MeasureSpec.getSize(heightMeasureSpec) - this.getPaddingTop() - this.getPaddingBottom());
+        mConfig.setWidthMode(MeasureSpec.getMode(widthMeasureSpec));
+        mConfig.setHeightMode(MeasureSpec.getMode(heightMeasureSpec));
+        mConfig.setCheckCanFit(mConfig.getLengthMode() != View.MeasureSpec.UNSPECIFIED);
 
         CommonLogic.fillLines(mViews, mLines, mConfig);
         CommonLogic.calculateLinesAndChildPosition(mLines);
@@ -599,8 +657,8 @@ public abstract class FlowLayout extends ViewGroup {
 
         LineDefinition currentLine = mLines.get(mLines.size() - 1);
         int contentThickness = currentLine.getLineStartThickness() + currentLine.getLineThickness();
-        int realControlLength = CommonLogic.findSize(this.mConfig.getLengthMode(), this.mConfig.getMaxLength(), contentLength);
-        int realControlThickness = CommonLogic.findSize(this.mConfig.getThicknessMode(), this.mConfig.getMaxThickness(), contentThickness);
+        int realControlLength = CommonLogic.findSize(mConfig.getLengthMode(), mConfig.getMaxLength(), contentLength);
+        int realControlThickness = CommonLogic.findSize(mConfig.getThicknessMode(), mConfig.getMaxThickness(), contentThickness);
 
         CommonLogic.applyGravityToLines(mLines, realControlLength, realControlThickness, mConfig);
 
@@ -612,7 +670,7 @@ public abstract class FlowLayout extends ViewGroup {
         /* need to take padding into account */
         int totalControlWidth = this.getPaddingLeft() + this.getPaddingRight();
         int totalControlHeight = this.getPaddingBottom() + this.getPaddingTop();
-        if (this.mConfig.getOrientation() == CommonLogic.HORIZONTAL) {
+        if (mConfig.getOrientation() == CommonLogic.HORIZONTAL) {
             totalControlWidth += contentLength;
             totalControlHeight += contentThickness;
         } else {
@@ -726,7 +784,7 @@ public abstract class FlowLayout extends ViewGroup {
         }
 
         if (lp.isNewLine()) {
-            if (this.mConfig.getOrientation() == CommonLogic.HORIZONTAL) {
+            if (mConfig.getOrientation() == CommonLogic.HORIZONTAL) {
                 float x = child.getLeft();
                 float y = child.getTop() + child.getHeight() / 2.0f;
                 canvas.drawLine(x, y - 6.0f, x, y + 6.0f, newLinePaint);
@@ -747,20 +805,20 @@ public abstract class FlowLayout extends ViewGroup {
     }
 
     public int getOrientation() {
-        return this.mConfig.getOrientation();
+        return mConfig.getOrientation();
     }
 
     public void setOrientation(int orientation) {
-        this.mConfig.setOrientation(orientation);
+        mConfig.setOrientation(orientation);
         this.requestLayout();
     }
 
     public boolean isDebugDraw() {
-        return this.mConfig.isDebugDraw() || debugDraw();
+        return mConfig.isDebugDraw() || debugDraw();
     }
 
     public void setDebugDraw(boolean debugDraw) {
-        this.mConfig.setDebugDraw(debugDraw);
+        mConfig.setDebugDraw(debugDraw);
         this.invalidate();
     }
 
@@ -779,26 +837,26 @@ public abstract class FlowLayout extends ViewGroup {
     }
 
     public float getWeightDefault() {
-        return this.mConfig.getWeightDefault();
+        return mConfig.getWeightDefault();
     }
 
     public void setWeightDefault(float weightDefault) {
-        this.mConfig.setWeightDefault(weightDefault);
+        mConfig.setWeightDefault(weightDefault);
         this.requestLayout();
     }
 
     public int getGravity() {
-        return this.mConfig.getGravity();
+        return mConfig.getGravity();
     }
 
     public void setGravity(int gravity) {
-        this.mConfig.setGravity(gravity);
+        mConfig.setGravity(gravity);
         this.requestLayout();
     }
 
     @Override
     public int getLayoutDirection() {
-        if (this.mConfig == null) {
+        if (mConfig == null) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 return View.LAYOUT_DIRECTION_LTR;
             } else {
@@ -807,7 +865,7 @@ public abstract class FlowLayout extends ViewGroup {
         }
 
         //noinspection ResourceType
-        return this.mConfig.getLayoutDirection();
+        return mConfig.getLayoutDirection();
     }
 
     @Override
@@ -817,18 +875,18 @@ public abstract class FlowLayout extends ViewGroup {
         }
 
         //noinspection ResourceType
-        if (this.mConfig.getLayoutDirection() != layoutDirection) {
-            this.mConfig.setLayoutDirection(layoutDirection);
+        if (mConfig.getLayoutDirection() != layoutDirection) {
+            mConfig.setLayoutDirection(layoutDirection);
             requestLayout();
         }
     }
 
     public int getMaxLines() {
-        return this.mConfig.getMaxLines();
+        return mConfig.getMaxLines();
     }
 
     public void setMaxLines(int maxLines) {
-        this.mConfig.setMaxLines(maxLines);
+        mConfig.setMaxLines(maxLines);
         this.requestLayout();
     }
 

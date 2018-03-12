@@ -6,6 +6,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import org.apmem.tools.adapters.AutoCompleteAdapter;
 import org.apmem.tools.example.R;
@@ -136,6 +137,21 @@ public class ScrollViewActivity extends Activity {
                 bccView.setEnabled(false);
             }
         });
+
+        findViewById(R.id.calculate_text).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<ChipInterface> texts = Utils.getAllEmails(toView.getObjects(),
+                        ccView.getObjects(), bccView.getObjects());
+
+                String text = Utils.getSingleLineEmailString(texts, toView.getWidth(),
+                        (int) toView.getAutoCompleteTextView().getTextSize(),
+                        toView.getAutoCompleteTextView().getTypeface());
+
+                Log.d(LOG_TAG , "Text = " + text);
+                ((TextView) findViewById(R.id.calculated_text)).setText(text);
+            }
+        });
     }
 
     /**
@@ -148,7 +164,7 @@ public class ScrollViewActivity extends Activity {
         Log.d(LOG_TAG, "####### TO DATA : ");
         for(ChipInterface chipInterface : to.getObjects()) {
             if(chipInterface == null) continue;
-            if (Utils.isValidEmailAddress(chipInterface.getLabel())) {
+            if (Utils.isValidEmailAddress(chipInterface.getInfo())) {
                 Log.d(LOG_TAG, chipInterface.getLabel());
             }
         }
@@ -156,7 +172,7 @@ public class ScrollViewActivity extends Activity {
         Log.d(LOG_TAG, "####### CC DATA : ");
         for(ChipInterface chipInterface : cc.getObjects()) {
             if(chipInterface == null) continue;
-            if (Utils.isValidEmailAddress(chipInterface.getLabel())) {
+            if (Utils.isValidEmailAddress(chipInterface.getInfo())) {
                 Log.d(LOG_TAG, chipInterface.getLabel());
             }
         }
@@ -164,7 +180,7 @@ public class ScrollViewActivity extends Activity {
         Log.d(LOG_TAG, "####### BCC DATA : ");
         for(ChipInterface chipInterface : bcc.getObjects()) {
             if(chipInterface == null) continue;
-            if (Utils.isValidEmailAddress(chipInterface.getLabel())) {
+            if (Utils.isValidEmailAddress(chipInterface.getInfo())) {
                 Log.d(LOG_TAG, chipInterface.getLabel());
             }
         }
